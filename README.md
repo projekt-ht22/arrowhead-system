@@ -1,35 +1,30 @@
-# Arrowhead Framework System of Systems Example Projects (Java Spring-Boot)
+# The arrowhead system for the snowblower project
+This is the arrowhead project for the snowblower.
 
-### Current examples in this repository
+## The different systems
+- Hello: Is a simple hello example that can be used as a template for new systems it has both a provider and consumer.
 
-1. Car demo ([read me](https://github.com/arrowhead-f/sos-examples-spring/blob/master/demo-car/README.md))
-2. Energy Forecast demo ([read me](https://github.com/arrowhead-f/sos-examples-spring/blob/master/demo-energy-forecast/README.md))
-3. Car demo with events ([read me](https://github.com/arrowhead-f/sos-examples-spring/blob/master/demo-car-with-events/README.md))
-4. Exchange Rate Intercloud demo ([read me](https://github.com/arrowhead-f/sos-examples-spring/blob/master/demo-exchange-rate-intercloud/README.md))
+## Getting started
+Here is a guide to test get started and test that everything works using the Hello systems.
+1. Set up a linux vm if you run on windows and continue in the vm.
+2. Install the core system from this repo.
+2. Start core systems.
+2. Compile the systems by `mvn install`.
+3. Run the updatedb-before.sql script (`sudo mysql < scripts/updatedb-before.sql`).
+4. Start hello-provider by in new terminal running:
+```
+cd hello/hello-provider/target
+java -jar hello-provider-0.0.1.jar
+```
+5. Run the updatedb-before.sql script again (`sudo mysql < scripts/updatedb-before.sql`).
+5. Stop provider by pressing `CTRL + C` in the terminal running it.
+5. Run the updatedb-after.sql script again (`sudo mysql < scripts/updatedb-after.sql`).
+6. Start the provider again.
+7. Start the consumer by running in a new terminal:
+```
+cd hello/hello-consumer/target
+java -jar hello-consumer-0.0.1.jar
+```
+8. Make sure the appropriate output is shown.
 
-### Requirements
-
-The project has the following dependencies:
-* **JRE/JDK 11** [Download from here](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
-* **Maven 3.5+** [Download from here](http://maven.apache.org/download.cgi) | [Install guide](https://www.baeldung.com/install-maven-on-windows-linux-mac)
-* **Authorization settings for the demo systems in your local arrowhead database**
-
-  ***By Arrowhead Management Tool***
-  - coming soon
-  
-  ***By Swagger API documentation***
-  
-  - Go to `http(s)://<authorization_host>:<authorization_port>`.
-  - Create the authorization rule via the [`POST /authorization/mgmt/intracloud`](https://github.com/eclipse-arrowhead/core-java-spring/blob/master/README.md#add-intracloud-rules) or [`POST /authorization/mgmt/intercloud`](https://github.com/eclipse-arrowhead/core-java-spring/blob/master/README.md#add-intercloud-rules) endpoint.
-  
-  ***By MySQL queries***
-  
-  *Intra-Cloud:*
-  - Insert a new entry with the consumer details into the `system_` table.
-  - Insert a new entry with the IDs of consumer entry, provider entry and the service definition entry into the `authorization_intra_cloud` table.
-  - Insert a new entry with the IDs of authorization intra cloud entry and service interface entry into the `authorization_intra_cloud_interface_connection` table.
-  
-  *Inter-Cloud:*
-  - Insert a new entry with the cloud details into the `cloud` table. The `authentication_info` have to be filled out with the gatekeper's public key of the cloud.
-  - Insert a new entry with the IDs of the cloud entry, provider entry and the service definition entry into the `authorization_inter_cloud` table.
-  - Insert a new entry with the IDs of authorization inter cloud entry and service interface entry into the `authorization_inter_cloud_interface_connection` table.
+After this the system is set up correctly and hello can be used as a template to add new systems and looking into the sql scripts to update the core database to know about the systems and the connections between them.
