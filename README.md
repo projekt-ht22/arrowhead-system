@@ -28,3 +28,8 @@ java -jar hello-consumer-0.0.1.jar
 8. Make sure the appropriate output is shown.
 
 After this the system is set up correctly and hello can be used as a template to add new systems and looking into the sql scripts to update the core database to know about the systems and the connections between them.
+
+## Adding a new system
+Putt it in its own folder as in hello.
+Remember to generate a certificate for each system using the instructions from here: ? using the cloud certificate in the certificate folder in the arrowhead-core repo.
+Add the system to the sql scripts so that the authorization system knows what systems are allowed to consume what services.
