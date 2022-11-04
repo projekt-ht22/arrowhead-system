@@ -7,7 +7,7 @@ This is the arrowhead project for the snowblower.
 ## Getting started
 Here is a guide to test get started and test that everything works using the Hello systems.
 1. Set up a linux vm if you run on windows and continue in the vm.
-2. Install the core system from this repo.
+2. Install the core system from [this repo](https://github.com/projekt-ht22/arrowhead-core).
 2. Start core systems.
 2. Compile the systems by `mvn install`.
 3. Run the updatedb-before.sql script (`sudo mysql < scripts/updatedb-before.sql`).
