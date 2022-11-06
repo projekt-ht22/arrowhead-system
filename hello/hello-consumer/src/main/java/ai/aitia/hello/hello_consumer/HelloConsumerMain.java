@@ -51,6 +51,7 @@ public class HelloConsumerMain implements ApplicationRunner {
     }
 
     //-------------------------------------------------------------------------------------------------
+	// This function is started after the consumer is initialized
     @Override
 	public void run(final ApplicationArguments args) throws Exception {
 		helloOrchestrationAndConsumption();
@@ -60,6 +61,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 	public void helloOrchestrationAndConsumption() {
     	logger.info("Orchestration request for " + HelloConsumerConstants.HELLO_SERVICE_DEFINITION + " service:");
 
+		// Create a request for the orchestrator asking for the hello service
     	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(HelloConsumerConstants.HELLO_SERVICE_DEFINITION)
     																		.interfaces(getInterface())
     																		.build();
@@ -71,28 +73,33 @@ public class HelloConsumerMain implements ApplicationRunner {
 		
 		printOut(orchestrationFormRequest);		
 		
+		// Send request to orchestrator and get a response
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
 
 		logger.info("Orchestration response:");
 		printOut(orchestrationResponse);		
 		
+		// Check for a valid response
 		if (orchestrationResponse == null) {
 			logger.info("No orchestration response received");
 		} else if (orchestrationResponse.getResponse().isEmpty()) {
 			logger.info("No provider found during the orchestration");
 		} else {
+			// Valid response received
 			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
 			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.HELLO_SERVICE_DEFINITION);
 			
+			// Create a hello request
 			logger.info("Create a hello request:");
 			final HelloRequestDTO request = new HelloRequestDTO(5);
 			printOut(request);
 			
+			// Get the security token
 			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			final String httpMethod = orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD);
-			printOut(httpMethod);
 			logger.info("Consume service");
 			@SuppressWarnings("unchecked")
+
+			// Send a request to the provider and get a response
 			final List<HelloResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
 					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 					getInterface(), token, request, new String[0]);
