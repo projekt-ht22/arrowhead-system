@@ -93,7 +93,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 			printOut(httpMethod);
 			logger.info("Consume service");
 			@SuppressWarnings("unchecked")
-			final HelloResponseDTO response = arrowheadService.consumeServiceHTTP(HelloResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+			final List<HelloResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
 					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 					getInterface(), token, request, new String[0]);
 			logger.info("Provider response");

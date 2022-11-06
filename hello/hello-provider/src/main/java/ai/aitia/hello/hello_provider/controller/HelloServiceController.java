@@ -29,19 +29,16 @@ public class HelloServiceController {
 	// methods
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public HelloResponseDTO hello(@RequestBody final HelloRequestDTO dto) {
+	@ResponseBody public List<HelloResponseDTO> hello(@RequestBody final HelloRequestDTO dto) {
 		logger.info("Handle request.");
-		String ret = "";
+
+		List <HelloResponseDTO> ret = new ArrayList<HelloResponseDTO>();
 
 		for (int n = 0; n < dto.getTimes(); n++) {
-			ret = ret + "hello ";
+			ret.add(new HelloResponseDTO("Hello"));
 		}
 
-		final String reter = ret;
-		printOut(ret);
-		printOut(reter);
-
-		return new HelloResponseDTO("Hello");
+		return ret;
 	}
 
     private void printOut(final Object object) {
