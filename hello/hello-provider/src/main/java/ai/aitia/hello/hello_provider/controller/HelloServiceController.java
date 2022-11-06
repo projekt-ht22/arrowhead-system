@@ -28,6 +28,7 @@ public class HelloServiceController {
 	//=================================================================================================
 	// methods
 
+	// POST mapping for the hello service
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody public List<HelloResponseDTO> hello(@RequestBody final HelloRequestDTO dto) {
 		logger.info("Handle request.");
