@@ -31,5 +31,5 @@ After this the system is set up correctly and hello can be used as a template to
 
 ## Adding a new system
 Putt it in its own folder as in hello.
-Remember to generate a certificate for each system using the instructions from here: ? using the cloud certificate in the certificate folder in the arrowhead-core repo.
+Remember to generate a certificate for each system using the instructions from [here](https://github.com/eclipse-arrowhead/core-java-spring/blob/master/documentation/certificates/create_client_certificate.pdf) using the cloud certificate in the certificate folder in the arrowhead-core repo.
 Add the system to the sql scripts so that the authorization system knows what systems are allowed to consume what services.
