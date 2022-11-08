@@ -3,7 +3,7 @@
 	
 	<parent>
 		<groupId>eu.arrowhead</groupId>
-		<artifactId>hello</artifactId>
+		<artifactId>mission-scheduler</artifactId>
 		<version>0.0.1</version>
 	</parent>
 	

@@ -4,13 +4,18 @@ import java.io.Serializable;
 
 public class AddMissionResponseDTO implements Serializable{
 
+	public enum Status{
+		ADDED,
+		ERROR
+	}
+
 	// This is used by serializable to version the class
 	private static final long serialVersionUID = 244;
 
 	//=================================================================================================
 	// members
 
-	private String hello;
+	private Status status;
 
 	//=================================================================================================
 	// methods
@@ -18,18 +23,19 @@ public class AddMissionResponseDTO implements Serializable{
 	public AddMissionResponseDTO() {}
 	
 	//-------------------------------------------------------------------------------------------------
-	public AddMissionResponseDTO(final String hello) {
-		this.hello = hello;
+	public AddMissionResponseDTO(final Status status) {
+		this.status = status;
 	}
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
 
-	public String getHello() {
-		return this.hello;
+	public Status getStatus() {
+		return status;
 	}
-	//-------------------------------------------------------------------------------------------------
-	public void setHello(final String hello) {
-		this.hello = hello;
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
+
 }

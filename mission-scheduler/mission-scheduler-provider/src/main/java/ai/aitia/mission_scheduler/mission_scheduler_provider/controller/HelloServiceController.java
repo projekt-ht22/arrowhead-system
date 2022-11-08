@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ai.aitia.mission_scheduler.common.Mission;
 import ai.aitia.mission_scheduler.common.dto.AddMissionRequestDTO;
 import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO;
+import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO.Status;
 import ai.aitia.mission_scheduler.mission_scheduler_provider.MissionSchedulerProviderConstants;
 
 import eu.arrowhead.common.Utilities;
@@ -34,13 +36,13 @@ public class HelloServiceController {
 	@ResponseBody public AddMissionResponseDTO hello(@RequestBody final AddMissionRequestDTO dto) {
 		logger.info("Handle request.");
 
-		String ret = "";
+		Mission mission = dto.getMission();
 
-		for (int n = 0; n < dto.getTimes(); n++) {
-			ret += "hello ";
+		for (String n : mission.getTasks()) {
+			printOut(n);
 		}
 
-		return new AddMissionResponseDTO(ret);
+		return new AddMissionResponseDTO(Status.ADDED);
 	}
 
     private void printOut(final Object object) {

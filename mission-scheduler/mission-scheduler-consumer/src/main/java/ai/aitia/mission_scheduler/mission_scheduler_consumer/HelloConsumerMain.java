@@ -1,5 +1,6 @@
 package ai.aitia.mission_scheduler.mission_scheduler_consumer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpMethod;
 
 import ai.aitia.arrowhead.application.library.ArrowheadService;
+import ai.aitia.mission_scheduler.common.Mission;
 import ai.aitia.mission_scheduler.common.dto.AddMissionRequestDTO;
 import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO;
 import eu.arrowhead.common.CommonConstants;
@@ -90,8 +92,16 @@ public class HelloConsumerMain implements ApplicationRunner {
 			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION);
 			
 			// Create a hello request
+			final List<String> tasks = new ArrayList<>();
+			tasks.add("go to place");
+			tasks.add("plow");
+			tasks.add("done");
+
+			final Mission mission = new Mission(tasks, "plow mission");
+			printOut(mission);
+
 			logger.info("Create a hello request:");
-			final AddMissionRequestDTO request = new AddMissionRequestDTO(5);
+			final AddMissionRequestDTO request = new AddMissionRequestDTO(mission, 0);
 			printOut(request);
 			
 			// Get the security token

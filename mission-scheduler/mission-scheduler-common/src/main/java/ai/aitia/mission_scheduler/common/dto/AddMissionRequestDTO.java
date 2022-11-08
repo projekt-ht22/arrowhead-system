@@ -2,6 +2,8 @@ package ai.aitia.mission_scheduler.common.dto;
 
 import java.io.Serializable;
 
+import ai.aitia.mission_scheduler.common.Mission;
+
 public class AddMissionRequestDTO implements Serializable{
 
 	// This is used by serializable to version the class
@@ -10,7 +12,8 @@ public class AddMissionRequestDTO implements Serializable{
 	//=================================================================================================
 	// members
 
-	private int times;
+	private Mission mission;
+	private int priority;
 
 	//=================================================================================================
 	// methods
@@ -18,18 +21,27 @@ public class AddMissionRequestDTO implements Serializable{
 	// This empty constructor is needed
 	public AddMissionRequestDTO() {}
 	//-------------------------------------------------------------------------------------------------
-	public AddMissionRequestDTO(final int times) {
-		this.times = times;
+	public AddMissionRequestDTO(final Mission mission, final int priority) {
+		this.mission = mission;
+		this.priority = priority;
 	}
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
 
-	public int getTimes() {
-		return this.times;
+	public Mission getMission() {
+		return mission;
 	}
-	//-------------------------------------------------------------------------------------------------
-	public void setTimes(final int times) {
-		this.times = times;
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setMission(Mission mission) {
+		this.mission = mission;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }
