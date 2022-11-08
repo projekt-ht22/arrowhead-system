@@ -97,7 +97,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 			tasks.add("plow");
 			tasks.add("done");
 
-			final Mission mission = new Mission(tasks, "plow mission");
+			final Mission mission = new Mission(tasks, "plow mission", 2);
 			printOut(mission);
 
 			logger.info("Create a hello request:");
