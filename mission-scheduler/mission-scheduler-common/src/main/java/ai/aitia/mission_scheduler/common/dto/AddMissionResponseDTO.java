@@ -10,7 +10,7 @@ public class AddMissionResponseDTO implements Serializable{
 	}
 
 	// This is used by serializable to version the class
-	private static final long serialVersionUID = 244;
+	private static final long serialVersionUID = 244L;
 
 	//=================================================================================================
 	// members

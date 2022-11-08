@@ -38,6 +38,7 @@ SELECT @mission_scheduler := id FROM system_ WHERE system_name = "missionschedul
 SELECT @mission_scheduler_tester := id FROM system_ WHERE system_name = "missionschedulertester";
 -- mission scheduler service definitions
 SELECT @sr_add_mission := id FROM service_definition WHERE service_definition = "add-mission";
+SELECT @sr_get_next_mission := id FROM service_definition WHERE service_definition = "get-next-mission";
 
 -- mission scheduler rules
 INSERT INTO authorization_intra_cloud
@@ -45,11 +46,17 @@ INSERT INTO authorization_intra_cloud
     VALUES
     (@mission_scheduler_tester, @mission_scheduler, @sr_add_mission);
 
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@mission_scheduler_tester, @mission_scheduler, @sr_get_next_mission);
+
 -- rule ids
 SELECT @car_create_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_create;
 SELECT @car_get_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_get;
 SELECT @hello_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_hello;
 SELECT @add_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_add_mission;
+SELECT @get_next_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_next_mission;
 
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
@@ -70,3 +77,8 @@ INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
     VALUES
     (@add_mission_aid, @sr_interface);
+
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@get_next_mission_aid, @sr_interface);

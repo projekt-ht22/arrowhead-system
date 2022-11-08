@@ -37,4 +37,12 @@ public class Scheduler {
         // For loop ended so no mission with higher priority add to end
         this.queue.add(mission);
     }
+
+    public Mission getNextAndRemoveMission() {
+        if (queue.size() == 0) {
+            return null;
+        }
+
+        return queue.get(queue.size() - 1);
+    }
 }

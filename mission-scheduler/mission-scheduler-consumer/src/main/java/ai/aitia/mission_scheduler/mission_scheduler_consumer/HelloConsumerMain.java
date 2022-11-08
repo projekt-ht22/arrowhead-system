@@ -17,6 +17,7 @@ import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_scheduler.common.Mission;
 import ai.aitia.mission_scheduler.common.dto.AddMissionRequestDTO;
 import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO;
+import ai.aitia.mission_scheduler.common.dto.GetNextMissionResponseDTO;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -58,13 +59,10 @@ public class HelloConsumerMain implements ApplicationRunner {
 	public void run(final ApplicationArguments args) throws Exception {
 		helloOrchestrationAndConsumption();
 	}
-    
 
-	public void helloOrchestrationAndConsumption() {
-    	logger.info("Orchestration request for " + HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION + " service:");
-
+	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
 		// Create a request for the orchestrator asking for the hello service
-    	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION)
+    	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(serviceDefinition)
     																		.interfaces(getInterface())
     																		.build();
 		final Builder orchestrationFormBuilder = arrowheadService.getOrchestrationFormBuilder();
@@ -77,6 +75,14 @@ public class HelloConsumerMain implements ApplicationRunner {
 		
 		// Send request to orchestrator and get a response
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
+		return orchestrationResponse;
+	}
+    
+
+	public void helloOrchestrationAndConsumption() {
+    	logger.info("Orchestration request for " + HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION + " service:");
+
+		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION);
 
 		logger.info("Orchestration response:");
 		printOut(orchestrationResponse);		
@@ -113,6 +119,28 @@ public class HelloConsumerMain implements ApplicationRunner {
 			final AddMissionResponseDTO response = arrowheadService.consumeServiceHTTP(AddMissionResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
 					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 					getInterface(), token, request, new String[0]);
+			logger.info("Provider response");
+			printOut(response);
+		}
+
+		OrchestrationResponseDTO orchestrationResponse2 = getOrchestrationResponse(HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
+		// Check for a valid response
+		if (orchestrationResponse2 == null) {
+			logger.info("No orchestration response received");
+		} else if (orchestrationResponse2.getResponse().isEmpty()) {
+			logger.info("No provider found during the orchestration");
+		} else {
+			// Valid response received
+			final OrchestrationResultDTO orchestrationResult = orchestrationResponse2.getResponse().get(0);
+			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
+			
+			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+			// Create a hello request
+			@SuppressWarnings("unchecked")
+			// Send a request to the provider and get a response
+			final List<GetNextMissionResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+					getInterface(), token, null, new String[0]);
 			logger.info("Provider response");
 			printOut(response);
 		}

@@ -13,6 +13,7 @@ public class HelloConsumerConstants {
 	
 	// The service definitions for the service that is consumed
 	public static final String ADD_MISSION_SERVICE_DEFINITION = "add-mission";
+	public static final String GET_NEXT_MISSION_SERVICE_DEFINITION = "get-next-mission";
 	
 	//=================================================================================================
 	// assistant methods

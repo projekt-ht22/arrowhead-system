@@ -83,8 +83,11 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		}		
 		
 		//Register services into ServiceRegistry
-		final ServiceRegistryRequestDTO createCarServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.ADD_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.ADD_MISSION_URI, HttpMethod.POST);		
-		arrowheadService.forceRegisterServiceToServiceRegistry(createCarServiceRequest);
+		final ServiceRegistryRequestDTO addMissionServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.ADD_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.ADD_MISSION_URI, HttpMethod.POST);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(addMissionServiceRequest);
+		final ServiceRegistryRequestDTO getNextMissionServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.GET_NEXT_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI, HttpMethod.GET);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(getNextMissionServiceRequest);
+		logger.info("Registred 2 services.");
 	}
 	
 	//-------------------------------------------------------------------------------------------------
@@ -92,6 +95,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 	public void customDestroy() {
 		//Unregister service
 		arrowheadService.unregisterServiceFromServiceRegistry(MissionSchedulerProviderConstants.ADD_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.ADD_MISSION_URI);
+		arrowheadService.unregisterServiceFromServiceRegistry(MissionSchedulerProviderConstants.GET_NEXT_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI);
 	}
 	
 	//=================================================================================================
