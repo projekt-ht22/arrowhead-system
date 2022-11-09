@@ -57,7 +57,8 @@ public class HelloConsumerMain implements ApplicationRunner {
 	// This function is started after the consumer is initialized
     @Override
 	public void run(final ApplicationArguments args) throws Exception {
-		helloOrchestrationAndConsumption();
+		addMissionOrchestrationAndConsumption();
+		getMissionOrchestrationAndConsumption();
 	}
 
 	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
@@ -79,7 +80,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 	}
     
 
-	public void helloOrchestrationAndConsumption() {
+	public void addMissionOrchestrationAndConsumption() {
     	logger.info("Orchestration request for " + HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION + " service:");
 
 		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION);
@@ -96,53 +97,73 @@ public class HelloConsumerMain implements ApplicationRunner {
 			// Valid response received
 			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
 			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.ADD_MISSION_SERVICE_DEFINITION);
+
+			List<Mission> missionList = new ArrayList<>();
 			
-			// Create a hello request
+			// Create a mission
 			final List<String> tasks = new ArrayList<>();
 			tasks.add("go to place");
 			tasks.add("plow");
 			tasks.add("done");
+			missionList.add(new Mission(tasks, "plow mission", 2));
 
-			final Mission mission = new Mission(tasks, "plow mission", 2);
-			printOut(mission);
+			final List<String> tasks2 = new ArrayList<>();
+			tasks2.add("go to other place");
+			tasks2.add("plow here");
+			tasks2.add("stop plowing");
+			tasks2.add("spin around");
+			missionList.add(new Mission(tasks2, "another plow mission", 3));
 
-			logger.info("Create a hello request:");
-			final AddMissionRequestDTO request = new AddMissionRequestDTO(mission, 0);
-			printOut(request);
-			
-			// Get the security token
-			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			logger.info("Consume service");
-			@SuppressWarnings("unchecked")
+			final List<String> tasks3 = new ArrayList<>();
+			tasks3.add("follow path");
+			tasks3.add("find charger");
+			tasks3.add("charge");
+			tasks3.add("follow path");
+			missionList.add(new Mission(tasks3, "another plow mission", 2));
 
-			// Send a request to the provider and get a response
-			final AddMissionResponseDTO response = arrowheadService.consumeServiceHTTP(AddMissionResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-					getInterface(), token, request, new String[0]);
-			logger.info("Provider response");
-			printOut(response);
+			for (Mission m : missionList) {
+				logger.info("Create a add request:");
+				final AddMissionRequestDTO request = new AddMissionRequestDTO(m, 0);
+				printOut(request);
+				
+				// Get the security token
+				final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+				logger.info("Consume service");
+				@SuppressWarnings("unchecked")
+				// Send a request to the provider and get a response
+				final AddMissionResponseDTO response = arrowheadService.consumeServiceHTTP(AddMissionResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+						getInterface(), token, request, new String[0]);
+				logger.info("Provider response");
+				printOut(response);
+			}
 		}
+	}
 
-		OrchestrationResponseDTO orchestrationResponse2 = getOrchestrationResponse(HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
+	public void getMissionOrchestrationAndConsumption() {
+
+		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
 		// Check for a valid response
-		if (orchestrationResponse2 == null) {
+		if (orchestrationResponse == null) {
 			logger.info("No orchestration response received");
-		} else if (orchestrationResponse2.getResponse().isEmpty()) {
+		} else if (orchestrationResponse.getResponse().isEmpty()) {
 			logger.info("No provider found during the orchestration");
 		} else {
 			// Valid response received
-			final OrchestrationResultDTO orchestrationResult = orchestrationResponse2.getResponse().get(0);
+			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
 			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
 			
 			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
 			// Create a hello request
-			@SuppressWarnings("unchecked")
 			// Send a request to the provider and get a response
-			final List<GetNextMissionResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-					getInterface(), token, null, new String[0]);
-			logger.info("Provider response");
-			printOut(response);
+			for (int i = 0; i < 3; i++) {
+				@SuppressWarnings("unchecked")
+				final List<GetNextMissionResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+						getInterface(), token, null, new String[0]);
+				logger.info("Provider response");
+				printOut(response);
+			}
 		}
 	}
 
