@@ -28,8 +28,8 @@ public class Scheduler {
         // insert before the first mission with a higher priority
         for(int i = 0; i < this.queue.size(); i++) {
             int currentPriority = this.queue.get(i).getPriority();
-            if (currentPriority > priority) {
-                this.queue.add(currentPriority, mission);
+            if (currentPriority >= priority) {
+                this.queue.add(i, mission);
                 return;
             }
         }
@@ -43,6 +43,9 @@ public class Scheduler {
             return null;
         }
 
-        return queue.get(queue.size() - 1);
+        Mission ret = queue.get(queue.size() - 1);
+        queue.remove(queue.size() - 1);
+
+        return ret;
     }
 }
