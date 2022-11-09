@@ -48,6 +48,7 @@ public class AddMissionServiceController {
 		return new AddMissionResponseDTO(Status.ADDED);
 	}
 
+	// This is only for debugging and should never be used in the real system
 	@GetMapping(path = MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody public List<GetNextMissionResponseDTO> getNextMission() {
 		logger.info("Handle request.");
