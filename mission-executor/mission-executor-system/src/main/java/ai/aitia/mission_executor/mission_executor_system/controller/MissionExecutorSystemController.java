@@ -35,6 +35,8 @@ public class MissionExecutorSystemController {
 	@Autowired
 	private ControllerState controllerState;
 
+	private Thread doMissionThread;
+
     private final Logger logger = LogManager.getLogger(MissionExecutorSystemConstants.class);
 	//=================================================================================================
 	// methods
@@ -44,14 +46,31 @@ public class MissionExecutorSystemController {
 	@ResponseBody public DoMissionResponseDTO doMission(@RequestBody final DoMissionRequestDTO dto) {
 		logger.info("Handle request do mission.");
 
-		if (controllerState.isRunning()) {
-			// replace mission
-			// add reminder of mission to scheduler
+		synchronized (controllerState) {
+			if (controllerState.isRunning()) {
+				// replace mission
+				// add reminder of mission to scheduler
+				controllerState.setRunning(false);
+				doMissionThread.interrupt();
+			}
+		}
+
+		if (doMissionThread != null) {
+			try {
+				doMissionThread.join();
+			} catch (InterruptedException e) {
+				return new DoMissionResponseDTO(Status.STARTED);
+			}
+		}
+
+		synchronized (controllerState) {
+			controllerState.setRunning(true);
+			controllerState.setCurrentMission(dto.getMission());
 		}
 
 		DoMissionService doMissionService = new DoMissionService(dto.getMission(), controllerState);
-
 		Thread t = new Thread(doMissionService);
+		doMissionThread = t;
 
 		t.start();
 

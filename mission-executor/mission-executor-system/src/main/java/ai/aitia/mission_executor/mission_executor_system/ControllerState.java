@@ -1,7 +1,10 @@
 package ai.aitia.mission_executor.mission_executor_system;
 
+import org.springframework.stereotype.Component;
+
 import ai.aitia.mission_scheduler.common.Mission;
 
+@Component
 public class ControllerState {
     private boolean isRunning;
     private int currentTaskIndex;
