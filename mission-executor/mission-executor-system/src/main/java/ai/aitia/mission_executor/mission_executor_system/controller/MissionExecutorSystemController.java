@@ -59,7 +59,7 @@ public class MissionExecutorSystemController {
 			try {
 				doMissionThread.join();
 			} catch (InterruptedException e) {
-				return new DoMissionResponseDTO(Status.STARTED);
+				return new DoMissionResponseDTO(Status.ERROR);
 			}
 		}
 
