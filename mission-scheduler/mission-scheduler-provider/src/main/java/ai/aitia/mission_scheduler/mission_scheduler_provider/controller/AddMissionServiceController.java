@@ -37,7 +37,7 @@ public class AddMissionServiceController {
 
 	// POST mapping for the hello service
 	@PostMapping(path = MissionSchedulerProviderConstants.ADD_MISSION_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public AddMissionResponseDTO hello(@RequestBody final AddMissionRequestDTO dto) {
+	@ResponseBody public AddMissionResponseDTO addMission(@RequestBody final AddMissionRequestDTO dto) {
 		logger.info("Handle request.");
 
 		Mission mission = dto.getMission();
@@ -46,22 +46,6 @@ public class AddMissionServiceController {
 
 
 		return new AddMissionResponseDTO(Status.ADDED);
-	}
-
-	// This is only for debugging and should never be used in the real system
-	@GetMapping(path = MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public List<GetNextMissionResponseDTO> getNextMission() {
-		logger.info("Handle request.");
-
-		List<GetNextMissionResponseDTO> ret = new ArrayList<>();
-		
-		Mission next = scheduler.getNextAndRemoveMission();
-
-		if(ret != null) {
-			ret.add(new GetNextMissionResponseDTO(next));
-		}
-
-		return ret;
 	}
 
 

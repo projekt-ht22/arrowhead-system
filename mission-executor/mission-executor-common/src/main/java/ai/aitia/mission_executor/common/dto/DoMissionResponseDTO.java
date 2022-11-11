@@ -1,48 +1,43 @@
-package ai.aitia.mission_scheduler.common.dto;
+package ai.aitia.mission_executor.common.dto;
 
 import java.io.Serializable;
 
 import ai.aitia.mission_scheduler.common.Mission;
 
 
-public class AddMissionRequestDTO implements Serializable{
+public class DoMissionResponseDTO implements Serializable{
 
 	// This is used by serializable to version the class
-	private static final long serialVersionUID = 144;
+	private static final long serialVersionUID = 1232432L;
+
+	public enum Status {
+		STARTED,
+		ERROR
+	}
 
 	//=================================================================================================
 	// members
 
-	private Mission mission;
-	private int priority;
+	private Status status;
 
 	//=================================================================================================
 	// methods
 	
 	// This empty constructor is needed
-	public AddMissionRequestDTO() {}
+	public DoMissionResponseDTO() {}
 	//-------------------------------------------------------------------------------------------------
-	public AddMissionRequestDTO(final Mission mission, final int priority) {
-		this.mission = mission;
-		this.priority = priority;
+	public DoMissionResponseDTO(final Status status) {
+		this.status = status;
 	}
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
 
-	public Mission getMission() {
-		return mission;
+	public Status getStatus() {
+		return status;
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setMission(Mission mission) {
-		this.mission = mission;
-	}
-
-	public void setPriority(int priority) {
-		this.priority = priority;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 }

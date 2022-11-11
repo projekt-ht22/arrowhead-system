@@ -10,6 +10,14 @@
   
   <artifactId>mission-executor-common</artifactId>
   <name>Arrowhead mission executor Common</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>mission-scheduler-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>
   
   <build>
 		<plugins>

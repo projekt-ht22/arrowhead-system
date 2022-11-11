@@ -1,5 +1,6 @@
 package ai.aitia.mission_executor.mission_executor_tester;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,8 +14,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpMethod;
 
 import ai.aitia.arrowhead.application.library.ArrowheadService;
+import ai.aitia.mission_executor.common.dto.DoMissionRequestDTO;
+import ai.aitia.mission_executor.common.dto.DoMissionResponseDTO;
 import ai.aitia.mission_executor.common.dto.HelloRequestDTO;
 import ai.aitia.mission_executor.common.dto.HelloResponseDTO;
+import ai.aitia.mission_scheduler.common.Mission;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -54,15 +58,12 @@ public class MissionExecutorTesterMain implements ApplicationRunner {
 	// This function is started after the consumer is initialized
     @Override
 	public void run(final ApplicationArguments args) throws Exception {
-		helloOrchestrationAndConsumption();
+		doMission();
 	}
     
-
-	public void helloOrchestrationAndConsumption() {
-    	logger.info("Orchestration request for " + MissionExecutorTesterConstants.DO_MISSION_SERVICE_DEFINITION + " service:");
-
+	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
 		// Create a request for the orchestrator asking for the hello service
-    	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(MissionExecutorTesterConstants.DO_MISSION_SERVICE_DEFINITION)
+    	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(serviceDefinition)
     																		.interfaces(getInterface())
     																		.build();
 		final Builder orchestrationFormBuilder = arrowheadService.getOrchestrationFormBuilder();
@@ -75,6 +76,27 @@ public class MissionExecutorTesterMain implements ApplicationRunner {
 		
 		// Send request to orchestrator and get a response
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
+		return orchestrationResponse;
+	}
+
+	private <T, E> T consumeServiceRequestAndResponse(OrchestrationResultDTO orchestrationResult, E request, Class<T> responseType) {
+		// Get the security token
+		final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+		logger.info("Consume service");
+		@SuppressWarnings("unchecked")
+
+		// Send a request to the provider and get a response
+		T ret = arrowheadService.consumeServiceHTTP(responseType, HttpMethod.valueOf(orchestrationResult.getMetadata().get(MissionExecutorTesterConstants.HTTP_METHOD)),
+				orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+				getInterface(), token, request, new String[0]);
+		
+		return ret;
+	}
+
+	public void doMission() {
+    	logger.info("Orchestration request for " + MissionExecutorTesterConstants.DO_MISSION_SERVICE_DEFINITION + " service:");
+
+		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(MissionExecutorTesterConstants.DO_MISSION_SERVICE_DEFINITION);
 
 		logger.info("Orchestration response:");
 		printOut(orchestrationResponse);		
@@ -91,18 +113,16 @@ public class MissionExecutorTesterMain implements ApplicationRunner {
 			
 			// Create a hello request
 			logger.info("Create a hello request:");
-			final HelloRequestDTO request = new HelloRequestDTO(5);
+			final List<String> tasks = new ArrayList<>();
+			tasks.add("go to place");
+			tasks.add("plow");
+			tasks.add("done");
+			Mission mission = new Mission(tasks, "plow mission", 2);
+			final DoMissionRequestDTO request = new DoMissionRequestDTO(mission);
 			printOut(request);
-			
-			// Get the security token
-			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			logger.info("Consume service");
-			@SuppressWarnings("unchecked")
 
-			// Send a request to the provider and get a response
-			final List<HelloResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(MissionExecutorTesterConstants.HTTP_METHOD)),
-					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-					getInterface(), token, request, new String[0]);
+			DoMissionResponseDTO response = consumeServiceRequestAndResponse(orchestrationResult, request, DoMissionResponseDTO.class);
+			
 			logger.info("Provider response");
 			printOut(response);
 		}

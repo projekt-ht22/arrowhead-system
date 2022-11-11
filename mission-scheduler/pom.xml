@@ -10,10 +10,13 @@
 	
 	<artifactId>mission-scheduler</artifactId>
 	<packaging>pom</packaging>
+
+
 	
 	<modules>
 	    <module>mission-scheduler-common</module>
 	    <module>mission-scheduler-consumer</module>
 	    <module>mission-scheduler-provider</module>		
 	</modules>
+
 </project>
