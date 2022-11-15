@@ -9,7 +9,7 @@ import com.fazecast.jSerialComm.*;
 
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class Serial {
     private SerialPort comPort = SerialPort.getCommPorts()[0];
     private int duty_cycle = 0;

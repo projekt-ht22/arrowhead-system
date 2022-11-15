@@ -2,7 +2,7 @@ package ai.aitia.robot_controller.common.dto;
 
 import java.io.Serializable;
 
-public class SetSpeedRequestDTO implements Serializable{
+public class SetSpeedRequestDTO implements Serializable {
 
 	// This is used by serializable to version the class
 	private static final long serialVersionUID = 178L;
@@ -26,20 +26,18 @@ public class SetSpeedRequestDTO implements Serializable{
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
-
-	public int GetRightTrackSpeed() {
-		return this.right_track;
+	public int getLeft_track() {
+		return left_track;
+	}
+	public int getRight_track() {
+		return right_track;
 	}
 
-	public int GetLeftTrackSpeed() {
-		return this.left_track;
+	public void setLeft_track(int left_track) {
+		this.left_track = left_track;
 	}
-
-	public void SetRightTrackSpeed(int right_track) {
+	public void setRight_track(int right_track) {
 		this.right_track = right_track;
 	}
 
-	public void SetLeftTrackSpeed(int left_track) {
-		this.left_track = left_track;
-	}
 }

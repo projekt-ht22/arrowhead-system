@@ -101,7 +101,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 
 			// Create a hello request
 			logger.info("Create a speed request:");
-			final SetSpeedRequestDTO request = new SetSpeedRequestDTO(1000,500);
+			SetSpeedRequestDTO request = new SetSpeedRequestDTO(1000,500);
 			logger.info("Create a speed request done");
 			printOut(request);
 			logger.info("after print");

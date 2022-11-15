@@ -37,16 +37,16 @@ INSERT INTO authorization_intra_cloud
 SELECT @robot_controller := id FROM system_ WHERE system_name = "robot-controller";
 SELECT @robot_controller_test := id FROM system_ WHERE system_name = "robot-controller-test";
 -- mission scheduler service definitions
-SELECT @sr_add_message := id FROM service_definition WHERE service_definition = "add-message";
+-- SELECT @sr_add_message := id FROM service_definition WHERE service_definition = "add-message";
 SELECT @sr_set_speed := id FROM service_definition WHERE service_definition = "set-track-speed";
 SELECT @sr_get_message := id FROM service_definition WHERE service_definition = "get-message";
 SELECT @sr_set_tilt := id FROM service_definition WHERE service_definition = "set-tilt-amount";
 
 -- mission scheduler rules
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@robot_controller_test, @robot_controller, @sr_add_message);
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@robot_controller_test, @robot_controller, @sr_add_message);
 
 INSERT INTO authorization_intra_cloud
     (consumer_system_id, provider_system_id, service_id)
@@ -87,10 +87,10 @@ INSERT INTO authorization_intra_cloud_interface_connection
     VALUES
     (@hello_aid, @sr_interface);
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@add_message_aid, @sr_interface);
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--    (authorization_intra_cloud_id, interface_id)
+--    VALUES
+--    (@add_message_aid, @sr_interface);
 
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)

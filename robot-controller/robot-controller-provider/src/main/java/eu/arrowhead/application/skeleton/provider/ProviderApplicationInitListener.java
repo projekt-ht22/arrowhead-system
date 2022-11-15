@@ -83,13 +83,13 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		}		
 		
 		//Register services into ServiceRegistry
-		final ServiceRegistryRequestDTO addMessageServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.ADD_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.ADD_MESSAGE_URI, HttpMethod.POST);		
-		arrowheadService.forceRegisterServiceToServiceRegistry(addMessageServiceRequest);
+		//final ServiceRegistryRequestDTO addMessageServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.ADD_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.ADD_MESSAGE_URI, HttpMethod.POST);		
+		//arrowheadService.forceRegisterServiceToServiceRegistry(addMessageServiceRequest);
 		final ServiceRegistryRequestDTO getNextMessageServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.GET_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.GET_MESSAGE_URI, HttpMethod.GET);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(getNextMessageServiceRequest);
-		final ServiceRegistryRequestDTO setSpeedServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.SET_TRACK_SPEED_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TRACK_SPEED_URI, HttpMethod.GET);		
+		final ServiceRegistryRequestDTO setSpeedServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.SET_TRACK_SPEED_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TRACK_SPEED_URI, HttpMethod.POST);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(setSpeedServiceRequest );
-		final ServiceRegistryRequestDTO setTiltServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.SET_TILT_AMOUNT_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TILT_AMOUNT_URI, HttpMethod.GET);		
+		final ServiceRegistryRequestDTO setTiltServiceRequest = createServiceRegistryRequest(RobotControllerProviderConstants.SET_TILT_AMOUNT_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TILT_AMOUNT_URI, HttpMethod.POST);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(setTiltServiceRequest);
 		logger.info("Registred 2 services.");
 	}
@@ -98,7 +98,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 	@Override
 	public void customDestroy() {
 		//Unregister service
-		arrowheadService.unregisterServiceFromServiceRegistry(RobotControllerProviderConstants.ADD_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.ADD_MESSAGE_URI);
+		//arrowheadService.unregisterServiceFromServiceRegistry(RobotControllerProviderConstants.ADD_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.ADD_MESSAGE_URI);
 		arrowheadService.unregisterServiceFromServiceRegistry(RobotControllerProviderConstants.GET_MESSAGE_SERVICE_DEFINITION, RobotControllerProviderConstants.GET_MESSAGE_URI);
 		arrowheadService.unregisterServiceFromServiceRegistry(RobotControllerProviderConstants.SET_TRACK_SPEED_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TRACK_SPEED_URI);
 		arrowheadService.unregisterServiceFromServiceRegistry(RobotControllerProviderConstants.SET_TILT_AMOUNT_SERVICE_DEFINITION, RobotControllerProviderConstants.SET_TILT_AMOUNT_URI);
