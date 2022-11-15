@@ -2,10 +2,16 @@ package ai.aitia.mission_scheduler.mission_scheduler_provider.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jose4j.json.internal.json_simple.JSONArray;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +24,7 @@ import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_executor.common.dto.DoMissionRequestDTO;
 import ai.aitia.mission_executor.common.dto.DoMissionResponseDTO;
 import ai.aitia.mission_scheduler.common.Mission;
+import ai.aitia.mission_scheduler.common.MissionTask.TaskType;
 import ai.aitia.mission_scheduler.common.dto.AddMissionRequestDTO;
 import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO;
@@ -59,10 +66,27 @@ public class AddMissionServiceController {
 
 	// POST mapping for the hello service
 	@PostMapping(path = MissionSchedulerProviderConstants.ADD_MISSION_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public AddMissionResponseDTO addMission(@RequestBody final AddMissionRequestDTO dto) {
+	@ResponseBody public AddMissionResponseDTO addMission(HttpEntity<String> httpEntity) {
 		logger.info("Handle request.");
+		String rawJson = httpEntity.getBody();
+		System.out.println(Utilities.toPrettyJson(rawJson));
 
+		try {
+			Object obj = new JSONParser().parse(rawJson);
+			JSONObject jsonObject = (JSONObject) obj;
+
+			JSONObject missionObject = (JSONObject) jsonObject.get("mission");
+			Mission mission = new Mission(missionObject);
+			printOut(mission);
+		} catch (ParseException e) {
+			logger.error("unable to parse mission");
+			return new AddMissionResponseDTO(Status.ERROR);
+		}
+
+		/*
 		Mission mission = dto.getMission();
+		logger.info("Mission received:");
+		printOut(mission);
 
 		// if not ready add mission to schedule else do the mission
 		if (ready) {
@@ -74,6 +98,8 @@ public class AddMissionServiceController {
 		} else {
 			scheduler.addMission(mission);
 		}
+		*/
+
 
 
 		return new AddMissionResponseDTO(Status.ADDED);

@@ -14,6 +14,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpMethod;
 
 import ai.aitia.arrowhead.application.library.ArrowheadService;
+import ai.aitia.mission_scheduler.common.FollowPathTask;
+import ai.aitia.mission_scheduler.common.GPSPoint;
+import ai.aitia.mission_scheduler.common.GoToPointTask;
 import ai.aitia.mission_scheduler.common.Mission;
 import ai.aitia.mission_scheduler.common.MissionTask;
 import ai.aitia.mission_scheduler.common.MissionTask.TaskType;
@@ -79,6 +82,20 @@ public class HelloConsumerMain implements ApplicationRunner {
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
 		return orchestrationResponse;
 	}
+
+	private <T, E> T consumeServiceRequestAndResponse(OrchestrationResultDTO orchestrationResult, E request, Class<T> responseType) {
+		// Get the security token
+		final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+		logger.info("Consume service");
+		@SuppressWarnings("unchecked")
+
+		// Send a request to the provider and get a response
+		T ret = arrowheadService.consumeServiceHTTP(responseType, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+				orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+				getInterface(), token, request, new String[0]);
+		
+		return ret;
+	}
     
 
 	public void addMissionOrchestrationAndConsumption() {
@@ -103,9 +120,20 @@ public class HelloConsumerMain implements ApplicationRunner {
 			
 			// Create a mission
 			final List<MissionTask> tasks = new ArrayList<>();
-			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go to start"));
-			tasks.add(new MissionTask(TaskType.FOLLOW_PATH, "Follow path"));
-			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go home"));
+
+			GoToPointTask task1 = new GoToPointTask("go to start", 23.45, 34.56);
+			List<GPSPoint> points2 = new ArrayList<>();
+			points2.add(new GPSPoint(1.5, 1.5));
+			points2.add(new GPSPoint(2.5, 2.5));
+			points2.add(new GPSPoint(3.5, 3.5));
+			points2.add(new GPSPoint(4.5, 4.5));
+			points2.add(new GPSPoint(5.5, 5.5));
+			points2.add(new GPSPoint(6.5, 6.5));
+			FollowPathTask task2 = new FollowPathTask("follow path", points2);
+			GoToPointTask task3 = new GoToPointTask("go to home", 123.45, 134.56);
+			tasks.add(task1);
+			tasks.add(task2);
+			tasks.add(task3);
 			missionList.add(new Mission(tasks, "plow mission", 2));
 
 			/*
@@ -129,15 +157,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 				final AddMissionRequestDTO request = new AddMissionRequestDTO(m, 0);
 				printOut(request);
 				
-				// Get the security token
-				final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-				logger.info("Consume service");
-				@SuppressWarnings("unchecked")
-				// Send a request to the provider and get a response
-				final AddMissionResponseDTO response = arrowheadService.consumeServiceHTTP(AddMissionResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-						getInterface(), token, request, new String[0]);
-				logger.info("Provider response");
+				AddMissionResponseDTO response = consumeServiceRequestAndResponse(orchestrationResult, request, AddMissionResponseDTO.class);
 				printOut(response);
 			}
 		}
