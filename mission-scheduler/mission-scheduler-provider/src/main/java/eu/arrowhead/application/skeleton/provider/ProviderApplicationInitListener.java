@@ -71,6 +71,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 
 		//Checking the availability of necessary core systems
 		checkCoreSystemReachability(CoreSystem.SERVICEREGISTRY);
+		checkCoreSystemReachability(CoreSystem.ORCHESTRATOR);		
 		if (sslEnabled && tokenSecurityFilterEnabled) {
 			checkCoreSystemReachability(CoreSystem.AUTHORIZATION);			
 
@@ -81,13 +82,16 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		} else {
 			logger.info("TokenSecurityFilter in not active");
 		}		
+		arrowheadService.updateCoreServiceURIs(CoreSystem.ORCHESTRATOR);
 		
 		//Register services into ServiceRegistry
 		final ServiceRegistryRequestDTO addMissionServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.ADD_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.ADD_MISSION_URI, HttpMethod.POST);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(addMissionServiceRequest);
 		final ServiceRegistryRequestDTO getNextMissionServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.GET_NEXT_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI, HttpMethod.GET);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(getNextMissionServiceRequest);
-		logger.info("Registred 2 services.");
+		final ServiceRegistryRequestDTO executorReadyServiceRequest = createServiceRegistryRequest(MissionSchedulerProviderConstants.EXECUTOR_READY_SERVICE_DEFINITION, MissionSchedulerProviderConstants.EXECUTOR_READY_URI, HttpMethod.POST);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(executorReadyServiceRequest);
+		logger.info("Registred 3 services.");
 	}
 	
 	//-------------------------------------------------------------------------------------------------
@@ -96,6 +100,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		//Unregister service
 		arrowheadService.unregisterServiceFromServiceRegistry(MissionSchedulerProviderConstants.ADD_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.ADD_MISSION_URI);
 		arrowheadService.unregisterServiceFromServiceRegistry(MissionSchedulerProviderConstants.GET_NEXT_MISSION_SERVICE_DEFINITION, MissionSchedulerProviderConstants.GET_NEXT_MISSION_URI);
+		arrowheadService.unregisterServiceFromServiceRegistry(MissionSchedulerProviderConstants.EXECUTOR_READY_SERVICE_DEFINITION, MissionSchedulerProviderConstants.EXECUTOR_READY_URI);
 	}
 	
 	//=================================================================================================

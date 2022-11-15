@@ -71,6 +71,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 
 		//Checking the availability of necessary core systems
 		checkCoreSystemReachability(CoreSystem.SERVICEREGISTRY);
+		checkCoreSystemReachability(CoreSystem.ORCHESTRATOR);		
 		if (sslEnabled && tokenSecurityFilterEnabled) {
 			checkCoreSystemReachability(CoreSystem.AUTHORIZATION);			
 
@@ -81,6 +82,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		} else {
 			logger.info("TokenSecurityFilter in not active");
 		}		
+		arrowheadService.updateCoreServiceURIs(CoreSystem.ORCHESTRATOR);
 		
 		//Register services into ServiceRegistry
 		final ServiceRegistryRequestDTO createCarServiceRequest = createServiceRegistryRequest(MissionExecutorSystemConstants.DO_MISSION_SERVICE_DEFINITION, MissionExecutorSystemConstants.DO_MISSION_URI, HttpMethod.POST);		

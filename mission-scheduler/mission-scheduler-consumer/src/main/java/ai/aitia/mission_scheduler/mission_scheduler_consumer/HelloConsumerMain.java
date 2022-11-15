@@ -58,7 +58,6 @@ public class HelloConsumerMain implements ApplicationRunner {
     @Override
 	public void run(final ApplicationArguments args) throws Exception {
 		addMissionOrchestrationAndConsumption();
-		getMissionOrchestrationAndConsumption();
 	}
 
 	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
@@ -134,33 +133,6 @@ public class HelloConsumerMain implements ApplicationRunner {
 				final AddMissionResponseDTO response = arrowheadService.consumeServiceHTTP(AddMissionResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
 						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 						getInterface(), token, request, new String[0]);
-				logger.info("Provider response");
-				printOut(response);
-			}
-		}
-	}
-
-	public void getMissionOrchestrationAndConsumption() {
-
-		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
-		// Check for a valid response
-		if (orchestrationResponse == null) {
-			logger.info("No orchestration response received");
-		} else if (orchestrationResponse.getResponse().isEmpty()) {
-			logger.info("No provider found during the orchestration");
-		} else {
-			// Valid response received
-			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
-			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.GET_NEXT_MISSION_SERVICE_DEFINITION);
-			
-			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			// Create a hello request
-			// Send a request to the provider and get a response
-			for (int i = 0; i < 3; i++) {
-				@SuppressWarnings("unchecked")
-				final List<GetNextMissionResponseDTO> response = arrowheadService.consumeServiceHTTP(List.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-						getInterface(), token, null, new String[0]);
 				logger.info("Provider response");
 				printOut(response);
 			}

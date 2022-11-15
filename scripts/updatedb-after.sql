@@ -63,13 +63,28 @@ INSERT INTO authorization_intra_cloud
     VALUES
     (@mission_executor_tester, @mission_executor, @sr_do_mission);
 
+
+-- inter system rules
+SELECT @sr_executor_ready := id FROM service_definition WHERE service_definition = "executor-ready";
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@mission_executor, @mission_scheduler, @sr_executor_ready);
+
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@mission_scheduler, @mission_executor, @sr_do_mission);
+
 -- rule ids
 SELECT @car_create_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_create;
 SELECT @car_get_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_get;
 SELECT @hello_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_hello;
 SELECT @add_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_add_mission;
 SELECT @get_next_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_next_mission;
-SELECT @do_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission;
+SELECT @do_mission_aid_test:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission AND consumer_system_id = @mission_executor_tester;
+SELECT @do_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission  AND consumer_system_id = @mission_scheduler;
+SELECT @executor_ready_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_executor_ready;
 
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
@@ -99,4 +114,14 @@ INSERT INTO authorization_intra_cloud_interface_connection
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
     VALUES
+    (@do_mission_aid_test, @sr_interface);
+
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
     (@do_mission_aid, @sr_interface);
+
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@executor_ready_aid, @sr_interface);

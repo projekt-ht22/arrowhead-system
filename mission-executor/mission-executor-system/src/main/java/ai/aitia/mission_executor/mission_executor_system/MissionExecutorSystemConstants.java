@@ -12,6 +12,9 @@ public class MissionExecutorSystemConstants {
 	public static final String INTERFACE_INSECURE = "HTTP-INSECURE-JSON";
 	public static final String HTTP_METHOD = "http-method";
 	public static final String DO_MISSION_URI = "/do_mission";
+
+
+	public static final String EXECUTOR_READY_SERVICE_DEFINITION =  "executor-ready";
 	
 	//=================================================================================================
 	// assistant methods
