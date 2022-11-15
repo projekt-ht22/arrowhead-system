@@ -67,7 +67,10 @@ public class AddMissionServiceController {
 		// if not ready add mission to schedule else do the mission
 		if (ready) {
 			ready = false;
-			doMission(mission);
+			if (!doMission(mission)) {
+				// something went wrong just add mission to queue
+				scheduler.addMission(mission);
+			}
 		} else {
 			scheduler.addMission(mission);
 		}
@@ -143,7 +146,9 @@ public class AddMissionServiceController {
 		return ret;
 	}
 
-	public void doMission(Mission mission) {
+	// sends a doMission request to mission executer
+	// return true if succesfull and false otherwise
+	public Boolean doMission(Mission mission) {
     	logger.info("Orchestration request for " + MissionSchedulerProviderConstants.DO_MISSION_SERVICE_DEFINITION + " service:");
 
 		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(MissionSchedulerProviderConstants.DO_MISSION_SERVICE_DEFINITION);
@@ -154,8 +159,10 @@ public class AddMissionServiceController {
 		// Check for a valid response
 		if (orchestrationResponse == null) {
 			logger.info("No orchestration response received");
+			return false;
 		} else if (orchestrationResponse.getResponse().isEmpty()) {
 			logger.info("No provider found during the orchestration");
+			return false;
 		} else {
 			// Valid response received
 			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
@@ -168,6 +175,8 @@ public class AddMissionServiceController {
 			
 			logger.info("Provider response");
 			printOut(response);
+
+			return response.getStatus() == DoMissionResponseDTO.Status.STARTED;
 		}
 	}
 
