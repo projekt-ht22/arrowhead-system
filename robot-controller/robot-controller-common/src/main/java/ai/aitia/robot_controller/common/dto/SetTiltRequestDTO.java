@@ -2,8 +2,6 @@ package ai.aitia.robot_controller.common.dto;
 
 import java.io.Serializable;
 
-import ai.aitia.robot_controller.common.Message;
-
 public class SetTiltRequestDTO implements Serializable{
 
 	// This is used by serializable to version the class
@@ -12,25 +10,25 @@ public class SetTiltRequestDTO implements Serializable{
 	//=================================================================================================
 	// members
 
-	private Integer tilt;
+	private byte tilt;
 	//=================================================================================================
 	// methods
 	
 	// This empty constructor is needed
 	public SetTiltRequestDTO() {}
 	//-------------------------------------------------------------------------------------------------
-	public SetTiltRequestDTO(final Integer tilt) {
+	public SetTiltRequestDTO(final byte tilt) {
 		this.tilt = tilt;
 	}
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
 
-	public Integer getMessage() {
+	public byte getTilt() {
 		return tilt;
 	}
 
-	public void setMessage(Integer tilt) {
+	public void setTilt(byte tilt) {
 		this.tilt = tilt;
 	}
 }

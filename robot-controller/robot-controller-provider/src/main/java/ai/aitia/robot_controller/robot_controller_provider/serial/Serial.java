@@ -9,8 +9,9 @@ import com.fazecast.jSerialComm.*;
 
 import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class Serial {
+    // will crash if no port is found
     private SerialPort comPort = SerialPort.getCommPorts()[0];
     private int duty_cycle = 0;
     private float total_current  = 0;
@@ -61,8 +62,28 @@ public class Serial {
         temp_arr.write(0x80);
         byte[] bytes_array = temp_arr.toByteArray();        
         comPort.writeBytes(bytes_array, bytes_array.length);
+    }
 
-        rpm =  rpm + 10;
+    public void set_tilt(byte tilt) throws IOException {
+
+        ByteArrayOutputStream temp_arr = new ByteArrayOutputStream();
+        temp_arr.write(0xFF);
+        temp_arr.write(0x02);
+        temp_arr.write(tilt);
+        temp_arr.write(0x80);
+        byte[] bytes_array = temp_arr.toByteArray();        
+        comPort.writeBytes(bytes_array, bytes_array.length);
+    }
+
+    public void set_auto_status(byte auto_status) throws IOException {
+
+        ByteArrayOutputStream temp_arr = new ByteArrayOutputStream();
+        temp_arr.write(0xFF);
+        temp_arr.write(0x03);
+        temp_arr.write(auto_status);
+        temp_arr.write(0x80);
+        byte[] bytes_array = temp_arr.toByteArray();        
+        comPort.writeBytes(bytes_array, bytes_array.length);
     }
 
     public void read_data() {

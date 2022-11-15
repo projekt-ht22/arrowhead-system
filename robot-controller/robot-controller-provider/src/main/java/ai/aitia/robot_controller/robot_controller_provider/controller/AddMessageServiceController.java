@@ -31,8 +31,8 @@ public class AddMessageServiceController {
 	//=================================================================================================
 	// members	
 
-	//@Autowired
-	//private Serial serial;
+	@Autowired
+	private Serial serial;
 	
     private final Logger logger = LogManager.getLogger(AddMessageServiceController.class);
 	//=================================================================================================
@@ -43,14 +43,12 @@ public class AddMessageServiceController {
 	@ResponseBody public AddMessageResponseDTO setTrackSpeed(@RequestBody final SetSpeedRequestDTO dto) {
 		logger.info("Handle request.");
 
-
-		/*
 		int baud = serial.get_baud();
 		String s2=String.valueOf(baud);
 		logger.info(s2);
 		
 		try {
-			serial.set_speed(dto.GetLeftTrackSpeed(), dto.GetRightTrackSpeed());
+			serial.set_speed(dto.getLeftTrackSpeed(), dto.getRightTrackSpeed());
 			logger.info("Send speed.");
 			return new AddMessageResponseDTO(Status.SENT);
 		} catch (Exception e) {
@@ -58,8 +56,6 @@ public class AddMessageServiceController {
 			logger.info("no port.");
 			return new AddMessageResponseDTO(Status.ERROR);
 		}
-		*/
-		return new AddMessageResponseDTO(Status.SENT);
 	}
 
 	// POST mapping for the hello service
@@ -67,23 +63,19 @@ public class AddMessageServiceController {
 	@ResponseBody public AddMessageResponseDTO setTiltAmount(@RequestBody final SetTiltRequestDTO dto) {
 		logger.info("Handle request.");
 
-
-		/*
 		int baud = serial.get_baud();
 		String s2=String.valueOf(baud);
 		logger.info(s2);
 		
 		try {
-			serial.set_speed(1000, 500);
-			logger.info("Send speed.");
+			serial.set_tilt(dto.getTilt());
+			logger.info("Send tilt.");
 			return new AddMessageResponseDTO(Status.SENT);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.info("no port.");
 			return new AddMessageResponseDTO(Status.ERROR);
 		}
-		*/
-		return new AddMessageResponseDTO(Status.SENT);
 	}
 
 	// This is only for debugging and should never be used in the real system
@@ -91,7 +83,7 @@ public class AddMessageServiceController {
 	@ResponseBody public Message getNextMessage() {
 		logger.info("Handle request.");
 
-		//serial.read_data();
+		serial.read_data();
 
 
 

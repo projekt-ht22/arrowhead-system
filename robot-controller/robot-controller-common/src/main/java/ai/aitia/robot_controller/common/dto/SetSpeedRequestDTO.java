@@ -26,18 +26,20 @@ public class SetSpeedRequestDTO implements Serializable {
 
 	//-------------------------------------------------------------------------------------------------
 	// Each member needs to have a public getter and setter
-	public int getLeft_track() {
-		return left_track;
-	}
-	public int getRight_track() {
-		return right_track;
+
+	public int getRightTrackSpeed() {
+		return this.right_track;
 	}
 
-	public void setLeft_track(int left_track) {
-		this.left_track = left_track;
+	public int getLeftTrackSpeed() {
+		return this.left_track;
 	}
-	public void setRight_track(int right_track) {
+
+	public void setRightTrackSpeed(int right_track) {
 		this.right_track = right_track;
 	}
 
+	public void setLeftTrackSpeed(int left_track) {
+		this.left_track = left_track;
+	}
 }

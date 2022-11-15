@@ -19,6 +19,7 @@ import ai.aitia.robot_controller.common.dto.AddMessageRequestDTO;
 import ai.aitia.robot_controller.common.dto.AddMessageResponseDTO;
 import ai.aitia.robot_controller.common.dto.GetMessageResponseDTO;
 import ai.aitia.robot_controller.common.dto.SetSpeedRequestDTO;
+import ai.aitia.robot_controller.common.dto.SetTiltRequestDTO;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -58,7 +59,8 @@ public class HelloConsumerMain implements ApplicationRunner {
 	// This function is started after the consumer is initialized
     @Override
 	public void run(final ApplicationArguments args) throws Exception {
-		addMessageOrchestrationAndConsumption();
+		setSpeedOrchestrationAndConsumption();
+		setTiltOrchestrationAndConsumption();
 		// getMessageOrchestrationAndConsumption();
 	}
 
@@ -81,7 +83,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 	}
     
 
-	public void addMessageOrchestrationAndConsumption() {
+	public void setSpeedOrchestrationAndConsumption() {
     	logger.info("Orchestration request for " + HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION + " service:");
 
 		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
@@ -118,45 +120,44 @@ public class HelloConsumerMain implements ApplicationRunner {
 			logger.info("Provider response");
 			printOut(response);
 
-			// List<Message> messageList = new ArrayList<>();
+		}
+	}
+
+	public void setTiltOrchestrationAndConsumption() {
+    	logger.info("Orchestration request for " + HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION + " service:");
+
+		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.SET_TILT_AMOUNT_SERVICE_DEFINITION);
+
+		logger.info("Orchestration response:");
+		printOut(orchestrationResponse);		
+		
+		// Check for a valid response
+		if (orchestrationResponse == null) {
+			logger.info("No orchestration response received");
+		} else if (orchestrationResponse.getResponse().isEmpty()) {
+			logger.info("No provider found during the orchestration");
+		} else {
+			// Valid response received
+			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
+			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.SET_TILT_AMOUNT_SERVICE_DEFINITION);
+
+			// Create a hello request
+			logger.info("Create a tilt request:");
+			final SetTiltRequestDTO request = new SetTiltRequestDTO((byte) 50);
+			printOut(request);
+			logger.info("after print");
 			
-			// // Create a message
-			// final List<String> tasks = new ArrayList<>();
-			// tasks.add("go to place");
-			// tasks.add("plow");
-			// tasks.add("done");
-			// messageList.add(new Message(tasks, "plow message", 2));
+			// Get the security token
+			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+			logger.info("Consume service");
+			@SuppressWarnings("unchecked")
+			
 
-			// final List<String> tasks2 = new ArrayList<>();
-			// tasks2.add("go to other place");
-			// tasks2.add("plow here");
-			// tasks2.add("stop plowing");
-			// tasks2.add("spin around");
-			// messageList.add(new Message(tasks2, "another plow message", 3));
-
-			// final List<String> tasks3 = new ArrayList<>();
-			// tasks3.add("follow path");
-			// tasks3.add("find charger");
-			// tasks3.add("charge");
-			// tasks3.add("follow path");
-			// messageList.add(new Message(tasks3, "another plow message", 2));
-
-			// for (Message m : messageList) {
-			// 	logger.info("Create a add request:");
-			// 	final AddMessageRequestDTO request = new AddMessageRequestDTO(m, 0);
-			// 	printOut(request);
-				
-			// 	// Get the security token
-			// 	final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			// 	logger.info("Consume service");
-			// 	@SuppressWarnings("unchecked")
-			// 	// Send a request to the provider and get a response
-			// 	final AddMessageResponseDTO response = arrowheadService.consumeServiceHTTP(AddMessageResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-			// 			orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-			// 			getInterface(), token, request, new String[0]);
-			// 	logger.info("Provider response");
-			// 	printOut(response);
-			// }
+			final AddMessageResponseDTO response = arrowheadService.consumeServiceHTTP(AddMessageResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+					getInterface(), token, request, new String[0]);
+			logger.info("Provider response");
+			printOut(response);
 		}
 	}
 
