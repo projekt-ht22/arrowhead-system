@@ -69,12 +69,13 @@ public class MissionExecutorSystemController {
 		synchronized (controllerState) {
 			if (controllerState.isRunning()) {
 				// replace mission
-				// add reminder of mission to scheduler
+				// TODO: add reminder of mission to scheduler
 				controllerState.setRunning(false);
 				doMissionThread.interrupt();
 			}
 		}
 
+		// wait for thread to end if exist
 		if (doMissionThread != null) {
 			try {
 				doMissionThread.join();
@@ -83,6 +84,7 @@ public class MissionExecutorSystemController {
 			}
 		}
 
+		// update the state
 		synchronized (controllerState) {
 			controllerState.setRunning(true);
 			controllerState.setCurrentMission(dto.getMission());
