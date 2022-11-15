@@ -15,6 +15,8 @@ import org.springframework.http.HttpMethod;
 
 import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_scheduler.common.Mission;
+import ai.aitia.mission_scheduler.common.MissionTask;
+import ai.aitia.mission_scheduler.common.MissionTask.TaskType;
 import ai.aitia.mission_scheduler.common.dto.AddMissionRequestDTO;
 import ai.aitia.mission_scheduler.common.dto.AddMissionResponseDTO;
 import ai.aitia.mission_scheduler.common.dto.GetNextMissionResponseDTO;
@@ -100,12 +102,13 @@ public class HelloConsumerMain implements ApplicationRunner {
 			List<Mission> missionList = new ArrayList<>();
 			
 			// Create a mission
-			final List<String> tasks = new ArrayList<>();
-			tasks.add("go to place");
-			tasks.add("plow");
-			tasks.add("done");
+			final List<MissionTask> tasks = new ArrayList<>();
+			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go to start"));
+			tasks.add(new MissionTask(TaskType.FOLLOW_PATH, "Follow path"));
+			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go home"));
 			missionList.add(new Mission(tasks, "plow mission", 2));
 
+			/*
 			final List<String> tasks2 = new ArrayList<>();
 			tasks2.add("go to other place");
 			tasks2.add("plow here");
@@ -119,6 +122,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 			tasks3.add("charge");
 			tasks3.add("follow path");
 			missionList.add(new Mission(tasks3, "another plow mission", 2));
+			*/
 
 			for (Mission m : missionList) {
 				logger.info("Create a add request:");

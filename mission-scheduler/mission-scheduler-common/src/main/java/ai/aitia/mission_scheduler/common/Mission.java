@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Mission implements Serializable{
-    private List<String> tasks;
+    private List<MissionTask> tasks;
     private String name;
     private int priority;
 
     public Mission() {}
-    public Mission(final List<String> tasks,final String name, final int priority) {
+    public Mission(final List<MissionTask> tasks,final String name, final int priority) {
         this.tasks = tasks;
         this.name = name;
         this.priority = priority;
@@ -18,7 +18,7 @@ public class Mission implements Serializable{
     public String getName() {
         return name;
     }
-    public List<String> getTasks() {
+    public List<MissionTask> getTasks() {
         return tasks;
     }
     public int getPriority() {
@@ -28,7 +28,7 @@ public class Mission implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
-    public void setTasks(List<String> tasks) {
+    public void setTasks(List<MissionTask> tasks) {
         this.tasks = tasks;
     }
     public void setPriority(int priority) {

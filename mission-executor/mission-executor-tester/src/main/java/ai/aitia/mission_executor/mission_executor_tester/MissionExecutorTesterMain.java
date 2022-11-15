@@ -19,6 +19,8 @@ import ai.aitia.mission_executor.common.dto.DoMissionResponseDTO;
 import ai.aitia.mission_executor.common.dto.HelloRequestDTO;
 import ai.aitia.mission_executor.common.dto.HelloResponseDTO;
 import ai.aitia.mission_scheduler.common.Mission;
+import ai.aitia.mission_scheduler.common.MissionTask;
+import ai.aitia.mission_scheduler.common.MissionTask.TaskType;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -112,11 +114,10 @@ public class MissionExecutorTesterMain implements ApplicationRunner {
 			validateOrchestrationResult(orchestrationResult, MissionExecutorTesterConstants.DO_MISSION_SERVICE_DEFINITION);
 			
 			// Create a hello request
-			logger.info("Create a hello request:");
-			final List<String> tasks = new ArrayList<>();
-			tasks.add("go to place");
-			tasks.add("plow");
-			tasks.add("done");
+			final List<MissionTask> tasks = new ArrayList<>();
+			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go to start"));
+			tasks.add(new MissionTask(TaskType.FOLLOW_PATH, "Follow path"));
+			tasks.add(new MissionTask(TaskType.GO_TO_POINT, "go home"));
 			Mission mission = new Mission(tasks, "plow mission", 2);
 			final DoMissionRequestDTO request = new DoMissionRequestDTO(mission);
 			printOut(request);

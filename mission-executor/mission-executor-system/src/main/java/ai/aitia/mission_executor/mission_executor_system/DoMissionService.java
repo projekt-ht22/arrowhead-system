@@ -5,6 +5,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import ai.aitia.mission_scheduler.common.Mission;
+import ai.aitia.mission_scheduler.common.MissionTask;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -52,11 +54,11 @@ public class DoMissionService implements Runnable {
 
     @Override
     public void run() {
-        List<String> tasks = mission.getTasks();
+        List<MissionTask> tasks = mission.getTasks();
 
         logger.info("Started mission");
         for (int i = 0; i < tasks.size(); i++) {
-            String n = tasks.get(i);
+            String n = tasks.get(i).getDescription();
             synchronized(controllerState) {
                 if (!controllerState.isRunning()) {
                     return;
