@@ -77,30 +77,23 @@ public class AddMissionServiceController {
 
 			JSONObject missionObject = (JSONObject) jsonObject.get("mission");
 			Mission mission = new Mission(missionObject);
+			logger.info("Mission received:");
 			printOut(mission);
+
+			// if not ready add mission to schedule else do the mission
+			if (ready) {
+				ready = false;
+				if (!doMission(mission)) {
+					// something went wrong just add mission to queue
+					scheduler.addMission(mission);
+				}
+			} else {
+				scheduler.addMission(mission);
+			}
 		} catch (ParseException e) {
 			logger.error("unable to parse mission");
 			return new AddMissionResponseDTO(Status.ERROR);
 		}
-
-		/*
-		Mission mission = dto.getMission();
-		logger.info("Mission received:");
-		printOut(mission);
-
-		// if not ready add mission to schedule else do the mission
-		if (ready) {
-			ready = false;
-			if (!doMission(mission)) {
-				// something went wrong just add mission to queue
-				scheduler.addMission(mission);
-			}
-		} else {
-			scheduler.addMission(mission);
-		}
-		*/
-
-
 
 		return new AddMissionResponseDTO(Status.ADDED);
 	}
