@@ -7,7 +7,11 @@ import javax.validation.ConstraintValidatorContext.ConstraintViolationBuilder.Co
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -63,7 +67,7 @@ public class MissionExecutorSystemController {
 
 	// POST mapping for the hello service
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public DoMissionResponseDTO doMission(@RequestBody final DoMissionRequestDTO dto) {
+	@ResponseBody public DoMissionResponseDTO doMission(HttpEntity<String> httpEntity) {
 		logger.info("Handle request do mission.");
 
 		synchronized (controllerState) {
@@ -84,18 +88,34 @@ public class MissionExecutorSystemController {
 			}
 		}
 
-		// update the state
-		synchronized (controllerState) {
-			controllerState.setRunning(true);
-			controllerState.setCurrentMission(dto.getMission());
+		try {
+			Object obj = new JSONParser().parse(httpEntity.getBody());
+			JSONObject jsonObject = (JSONObject) obj;
+
+			JSONObject missionObject = (JSONObject) jsonObject.get("mission");
+
+			Mission mission = new Mission(missionObject);
+			logger.info("Mission received:");
+			printOut(mission);
+
+			// update the state
+			synchronized (controllerState) {
+				controllerState.setRunning(true);
+				controllerState.setCurrentMission(mission);
+			}
+
+			DoMissionService doMissionService = new DoMissionService(mission, controllerState, sslProperties, arrowheadService);
+
+			Thread t = new Thread(doMissionService);
+			doMissionThread = t;
+
+			t.start();
+
+		} catch (ParseException e) {
+			logger.error("unable to parse mission");
+			return new DoMissionResponseDTO(Status.ERROR);
 		}
 
-		DoMissionService doMissionService = new DoMissionService(dto.getMission(), controllerState, sslProperties, arrowheadService);
-
-		Thread t = new Thread(doMissionService);
-		doMissionThread = t;
-
-		t.start();
 
 		return new DoMissionResponseDTO(Status.STARTED);
 	}
