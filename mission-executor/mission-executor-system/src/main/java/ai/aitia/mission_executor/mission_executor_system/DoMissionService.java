@@ -2,8 +2,12 @@ package ai.aitia.mission_executor.mission_executor_system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
+import ai.aitia.mission_scheduler.common.FollowPathTask;
+import ai.aitia.mission_scheduler.common.GPSPoint;
+import ai.aitia.mission_scheduler.common.GoToPointTask;
 import ai.aitia.mission_scheduler.common.Mission;
 import ai.aitia.mission_scheduler.common.MissionTask;
 
@@ -52,25 +56,55 @@ public class DoMissionService implements Runnable {
 		this.arrowheadService = arrowheadService;
     }
 
+	private void doGotoPointTask(GoToPointTask task) {
+		logger.info("Going to point: lat: {} long: {}", task.getPoint().getLatitude(), task.getPoint().getLongitude());
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			logger.info("interrupted");
+			return;
+		}
+	}
+
+	private void doFollowPathTask(FollowPathTask task) {
+		logger.info("Following path");
+		for (GPSPoint point: task.getPoints()) {
+			logger.info("Going to point: lat: {} long: {}", point.getLatitude(), point.getLongitude());
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				logger.info("interrupted");
+				return;
+			}
+		}
+	}
+	
+	private void doTask(MissionTask task) {
+		switch (task.getType()) {
+			case GO_TO_POINT:
+				doGotoPointTask((GoToPointTask) task);
+				break;
+			case FOLLOW_PATH:
+				doFollowPathTask((FollowPathTask) task);
+				break;
+		}
+	}
+
     @Override
     public void run() {
         List<MissionTask> tasks = mission.getTasks();
 
         logger.info("Started mission");
         for (int i = 0; i < tasks.size(); i++) {
-            String n = tasks.get(i).getDescription();
+            MissionTask n = tasks.get(i);
             synchronized(controllerState) {
                 if (!controllerState.isRunning()) {
                     return;
                 }
                 controllerState.setCurrentTaskIndex(i);
             }
-            logger.info("doing: {}", n);
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                logger.info("interrupted");
-            }
+            logger.info("doing: {}", n.getDescription());
+			doTask(n);
         }
 
         logger.info("done with mission");
