@@ -1,0 +1,12 @@
+ai/aitia/mission_scheduler/mission_scheduler_provider/MissionSchedulerProviderMain.class
+eu/arrowhead/application/skeleton/provider/security/ProviderTokenSecurityFilter.class
+ai/aitia/mission_scheduler/mission_scheduler_provider/controller/AddMissionServiceController.class
+eu/arrowhead/application/skeleton/provider/security/ProviderSecurityConfig.class
+eu/arrowhead/application/skeleton/provider/ProviderApplicationInitListener.class
+eu/arrowhead/application/skeleton/provider/configuration/ConfigConstants.class
+eu/arrowhead/application/skeleton/provider/security/ProviderAccessControlFilter.class
+ai/aitia/mission_scheduler/mission_scheduler_provider/MissionSchedulerProviderConstants.class
+eu/arrowhead/application/skeleton/provider/configuration/ContainerConfProperties.class
+ai/aitia/mission_scheduler/mission_scheduler_provider/scheduler/Scheduler.class
+eu/arrowhead/application/skeleton/provider/configuration/ContainerConfiguration.class
+ai/aitia/mission_scheduler/mission_scheduler_provider/controller/AddMissionServiceController$DoMissionRequestAsync.class
