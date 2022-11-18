@@ -3,21 +3,26 @@
 	
 	<parent>
 		<groupId>eu.arrowhead</groupId>
-		<artifactId>robot-controller</artifactId>
+		<artifactId>mission-scheduler</artifactId>
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>robot-controller-consumer</artifactId>
-	<name>Arrowhead hello Consumer</name>
+	<artifactId>mission-scheduler-provider</artifactId>
+	<name>Arrowhead mission-scheduler Provider</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>eu.arrowhead</groupId>
-			<artifactId>robot-controller-common</artifactId>
+			<artifactId>mission-scheduler-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>mission-executor-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -55,8 +60,8 @@
 		            	</configuration>
 	          		</execution>
 	        	</executions>
-	      	</plugin> 			
+	      	</plugin>
 		</plugins>
-	</build>	
+	</build>
+	
 </project>
-

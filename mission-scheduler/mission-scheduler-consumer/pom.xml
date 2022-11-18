@@ -3,17 +3,17 @@
 	
 	<parent>
 		<groupId>eu.arrowhead</groupId>
-		<artifactId>robot-controller</artifactId>
+		<artifactId>mission-scheduler</artifactId>
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>robot-controller-consumer</artifactId>
+	<artifactId>mission-scheduler-consumer</artifactId>
 	<name>Arrowhead hello Consumer</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>eu.arrowhead</groupId>
-			<artifactId>robot-controller-common</artifactId>
+			<artifactId>mission-scheduler-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>

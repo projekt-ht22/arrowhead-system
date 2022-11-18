@@ -8,12 +8,15 @@
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>robot-controller</artifactId>
+	<artifactId>mission-scheduler</artifactId>
 	<packaging>pom</packaging>
+
+
 	
 	<modules>
-	    <module>robot-controller-common</module>
-	    <module>robot-controller-consumer</module>
-	    <module>robot-controller-provider</module>		
+	    <module>mission-scheduler-common</module>
+	    <module>mission-scheduler-consumer</module>
+	    <module>mission-scheduler-provider</module>		
 	</modules>
+
 </project>
