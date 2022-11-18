@@ -26,7 +26,7 @@
 	
 	<modules>
 	    <module>hello</module>
-		<module>mission-scheduler</module>
+		<module>robot-controller</module>
   	</modules>
 	
 	<dependencies>
