@@ -84,6 +84,16 @@ INSERT INTO authorization_intra_cloud
     VALUES
     (@mission_scheduler_tester, @mission_scheduler, @sr_add_mission);
 
+-- navigator systems
+SELECT @navigator := id FROM system_ WHERE system_name = "navigator";
+SELECT @navigator_tester := id FROM system_ WHERE system_name = "navigatortester";
+SELECT @sr_go_to_point := id FROM service_definition WHERE service_definition = "go-to-point";
+-- navigator rules
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@navigator_tester, @navigator, @sr_go_to_point);
+
 
 -- inter system rules
 SELECT @sr_executor_ready := id FROM service_definition WHERE service_definition = "executor-ready";
@@ -110,6 +120,7 @@ SELECT @add_message_aid:= id FROM authorization_intra_cloud WHERE service_id = @
 SELECT @get_message_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_message;
 SELECT @set_speed_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_set_speed;
 SELECT @set_tilt_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_set_tilt;
+SELECT @go_to_point_test_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_go_to_point AND consumer_system_id = @navigator_tester;
 
 -- INSERT INTO authorization_intra_cloud_interface_connection
 --     (authorization_intra_cloud_id, interface_id)
@@ -170,3 +181,8 @@ INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
     VALUES
     (@set_tilt_aid, @sr_interface);
+
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@go_to_point_test_aid, @sr_interface);

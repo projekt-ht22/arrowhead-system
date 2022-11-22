@@ -6,6 +6,7 @@ DELETE FROM system_ WHERE system_name = "helloconsumer";
 DELETE FROM system_ WHERE system_name = "missionschedulertester";
 DELETE FROM system_ WHERE system_name = "missionexecutortester";
 DELETE FROM system_ WHERE system_name = "robot-controller-test";
+DELETE FROM system_ WHERE system_name = "navigatortester";
 DELETE FROM authorization_intra_cloud;
 DELETE FROM authorization_intra_cloud_interface_connection;
 
