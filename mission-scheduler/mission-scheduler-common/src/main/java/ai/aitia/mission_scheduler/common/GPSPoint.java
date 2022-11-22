@@ -9,7 +9,7 @@ public class GPSPoint implements Serializable {
     private double latitude;
 
     public GPSPoint() {}
-    public GPSPoint(double longitude, double latitude) {
+    public GPSPoint(double latitude, double longitude) {
         this.longitude = longitude;
         this.latitude = latitude;
     }
