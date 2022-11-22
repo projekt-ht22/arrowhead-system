@@ -9,7 +9,7 @@
   </parent>
   
   <artifactId>navigator-common</artifactId>
-  <name>Arrowhead hello Common</name>
+  <name>Arrowhead navigator Common</name>
 
 	<dependencies>
 		<dependency>

@@ -7,8 +7,8 @@
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>navigator-consumer</artifactId>
-	<name>Arrowhead hello Consumer</name>
+	<artifactId>navigator-tester</artifactId>
+	<name>Arrowhead navigator tester</name>
 	
 	<dependencies>
 		<dependency>

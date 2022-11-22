@@ -8,7 +8,7 @@
 	</parent>
 	
 	<artifactId>navigato-system</artifactId>
-	<name>Arrowhead hello Provider</name>
+	<name>Arrowhead navigator system</name>
 	
 	<dependencies>
 		<dependency>
