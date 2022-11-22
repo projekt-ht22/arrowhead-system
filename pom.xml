@@ -29,6 +29,7 @@
 		<module>mission-scheduler</module>
 		<module>mission-executor</module>
 		<module>robot-controller</module>
+		<module>navigator</module>
   	</modules>
 	
 	<dependencies>
