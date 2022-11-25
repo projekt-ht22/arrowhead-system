@@ -92,7 +92,7 @@ public class NavigatorTesterMain implements ApplicationRunner {
 			
 			// Create a hello request
 			logger.info("Create a hello request:");
-			final GoToPointRequestDTO request = new GoToPointRequestDTO(new GPSPoint(1.5, 1.5));
+			final GoToPointRequestDTO request = new GoToPointRequestDTO(new GPSPoint(65.5, 22));
 			printOut(request);
 			
 			// Get the security token
