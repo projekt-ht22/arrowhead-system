@@ -8,12 +8,12 @@
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>gps-controller</artifactId>
+	<artifactId>hello</artifactId>
 	<packaging>pom</packaging>
 	
 	<modules>
-	    <module>gps-controller-common</module>
-	    <module>gps-controller-consumer</module>
-	    <module>gps-controller-provider</module>		
+	    <module>hello-common</module>
+	    <module>hello-consumer</module>
+	    <module>hello-provider</module>		
 	</modules>
 </project>

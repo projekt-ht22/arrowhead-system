@@ -3,17 +3,17 @@
 	
 	<parent>
 		<groupId>eu.arrowhead</groupId>
-		<artifactId>gps-controller</artifactId>
+		<artifactId>mission-scheduler</artifactId>
 		<version>0.0.1</version>
 	</parent>
 	
-	<artifactId>gps-controller-provider</artifactId>
-	<name>Arrowhead gps-controller Provider</name>
+	<artifactId>mission-scheduler-consumer</artifactId>
+	<name>Arrowhead hello Consumer</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>eu.arrowhead</groupId>
-			<artifactId>gps-controller-common</artifactId>
+			<artifactId>mission-scheduler-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
@@ -55,8 +55,8 @@
 		            	</configuration>
 	          		</execution>
 	        	</executions>
-	      	</plugin>
+	      	</plugin> 			
 		</plugins>
-	</build>
-	
+	</build>	
 </project>
+
