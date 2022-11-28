@@ -16,8 +16,13 @@
 			<artifactId>gps-controller-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>mission-executor-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>

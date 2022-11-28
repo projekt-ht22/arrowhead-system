@@ -26,6 +26,10 @@
 	
 	<modules>
 		<module>gps-controller</module>
+	    <module>hello</module>
+		<module>mission-scheduler</module>
+		<module>mission-executor</module>
+		<module>robot-controller</module>
   	</modules>
 	
 	<dependencies>

@@ -10,10 +10,13 @@
 	
 	<artifactId>gps-controller</artifactId>
 	<packaging>pom</packaging>
+
+
 	
 	<modules>
 	    <module>gps-controller-common</module>
 	    <module>gps-controller-consumer</module>
 	    <module>gps-controller-provider</module>		
 	</modules>
+
 </project>
