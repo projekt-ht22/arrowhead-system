@@ -29,15 +29,35 @@ public class NavigatorServiceController {
 	//=================================================================================================
 	// methods
 
+	private Thread currentThread;
+	private GoToPointService currentGoToPointService;
+
 	// POST mapping for the hello service
 	@PostMapping(path = NavigatorSystemConstants.GO_TO_POINT_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody public NavigatorResponseDTO hello(@RequestBody final GoToPointRequestDTO dto) {
 		logger.info("Handle request.");
 
-		GoToPointService runner = new GoToPointService(dto.getPoint());
-		Thread t = new Thread(runner);
+		if (currentThread != null) {
+			// terminate current
+			logger.info("------------------------- interupted");
 
-		t.start();
+			currentGoToPointService.stop();
+			try {
+				currentThread.join();
+			} catch (InterruptedException e) {
+				logger.info("Interrupted doing join. This should never happen continuing.");
+			}
+		}
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			logger.info("Interrupted doing join. This should never happen continuing.");
+		}
+
+		currentGoToPointService = new GoToPointService(dto.getPoint());
+		currentThread = new Thread(currentGoToPointService);
+
+		currentThread.start();
 
 		return new NavigatorResponseDTO(NavigatorStatus.OK);
 	}

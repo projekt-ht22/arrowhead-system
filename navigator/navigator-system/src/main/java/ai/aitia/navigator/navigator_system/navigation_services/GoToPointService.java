@@ -31,7 +31,7 @@ public class GoToPointService implements Runnable {
 
     private void simulateUpdateCurrent() {
         currentPosition = new GPSPoint(simlat, simlon);
-        simlat += 0.0001;
+        simlat += 0.0000001;
         currentHeading = 0;
         //       65.61686316645734
     }
