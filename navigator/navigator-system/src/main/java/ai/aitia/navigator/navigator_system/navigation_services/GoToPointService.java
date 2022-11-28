@@ -5,6 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpMethod;
 
 import ai.aitia.arrowhead.application.library.ArrowheadService;
+import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO;
+import ai.aitia.gps_controller.common.dto.GetGPSCordinatesResponseDTO;
+import ai.aitia.gps_controller.common.dto.GetGPSHeadingResponseDTO;
+import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO.Navigation_status;
 import ai.aitia.mission_scheduler.common.GPSPoint;
 import ai.aitia.navigator.navigator_system.NavigatorSystemConstants;
 import ai.aitia.navigator.navigator_system.PIDController;
@@ -55,13 +59,37 @@ public class GoToPointService implements Runnable {
         //       65.61686316645734
     }
 
+    private OrchestrationResultDTO getOrchestrationResultBlocking(String serviceDefinition) {
+        OrchestrationResponseDTO response = null;
+        while (true) {
+            response = getOrchestrationResponse(serviceDefinition);
+            
+            if(response == null) {
+                continue;
+            } else if (response.getResponse().isEmpty()) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return response.getResponse().get(0);
+    }
+
     @Override
     public void run() {
         // create pid
         PIDController pid = new PIDController(1.2, 0.01, 0);
 
         // do orchestrations
+        final OrchestrationResultDTO getCoordinates = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_CORDINATES_SERVICE_DEFINITION);
+        final OrchestrationResultDTO getHeading = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_HEADING_SERVICE_DEFINITION);
+        final OrchestrationResultDTO getAccuracy = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_ACCURACY_SERVICE_DEFINITION);
+        final OrchestrationResultDTO setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
 
+        Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+        while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+            navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+        }
 
         while (true) {
             synchronized(stop) {
@@ -71,7 +99,13 @@ public class GoToPointService implements Runnable {
             }
 
             // update current position and heading
-            simulateUpdateCurrent();
+            //simulateUpdateCurrent();
+
+            GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
+            double lat = gpsResponse.getLatitude();
+            double lon = gpsResponse.getLongitude();
+
+            currentPosition = new GPSPoint(lat, lon);
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
@@ -84,6 +118,10 @@ public class GoToPointService implements Runnable {
 
             // calculate bearing to goal
             double bearing = StaticFunctions.calculateBearing(currentPosition, goalPosition);
+
+            // update heading
+            GetGPSHeadingResponseDTO gpsheading = consumeServiceResponse(getHeading, GetGPSHeadingResponseDTO.class);
+            currentHeading = gpsheading.getHeading();
 
             // Calculate control value using pid and difference between headings
             double e = bearing - currentHeading;
@@ -99,10 +137,10 @@ public class GoToPointService implements Runnable {
             leftRPM = leftRPM > 7000 ? 7000 : leftRPM;
             rightRPM = rightRPM > 7000 ? 7000 : rightRPM;
 
-            logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
-                goalPosition.getLatitude(), goalPosition.getLongitude(),
-                currentPosition.getLatitude(), currentPosition.getLongitude());
-            logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
+            //logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
+            //    goalPosition.getLatitude(), goalPosition.getLongitude(),
+            //    currentPosition.getLatitude(), currentPosition.getLongitude());
+            //logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
             logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
         }
     }
@@ -135,6 +173,20 @@ public class GoToPointService implements Runnable {
 		T ret = arrowheadService.consumeServiceHTTP(responseType, HttpMethod.valueOf(orchestrationResult.getMetadata().get(NavigatorSystemConstants.HTTP_METHOD)),
 				orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 				getInterface(), token, request, new String[0]);
+		
+		return ret;
+	}
+
+	private <T> T consumeServiceResponse(OrchestrationResultDTO orchestrationResult, Class<T> responseType) {
+		// Get the security token
+		final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+		logger.info("Consume service");
+		@SuppressWarnings("unchecked")
+
+		// Send a request to the provider and get a response
+		T ret = arrowheadService.consumeServiceHTTP(responseType, HttpMethod.valueOf(orchestrationResult.getMetadata().get(NavigatorSystemConstants.HTTP_METHOD)),
+				orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+				getInterface(), token, null, new String[0]);
 		
 		return ret;
 	}

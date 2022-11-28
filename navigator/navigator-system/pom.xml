@@ -16,6 +16,11 @@
 			<artifactId>navigator-common</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>gps-controller-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 	
 	<build>
