@@ -7,10 +7,10 @@ SELECT @sr_interface := id FROM service_interface WHERE interface_name = "HTTP-S
 -- Systems and service definitions ----------------------------------------------------------------------------------------
 
 -- hello systems
-SELECT @hello_prov := id FROM system_ WHERE system_name = "helloprovider";
-SELECT @hello_cons := id FROM system_ WHERE system_name = "helloconsumer";
+-- SELECT @hello_prov := id FROM system_ WHERE system_name = "helloprovider";
+-- SELECT @hello_cons := id FROM system_ WHERE system_name = "helloconsumer";
 -- hello service definitions
-SELECT @sr_hello := id FROM service_definition WHERE service_definition = "hello";
+-- SELECT @sr_hello := id FROM service_definition WHERE service_definition = "hello";
 
 -- gps interface systems
 SELECT @gps_controller := id FROM system_ WHERE system_name = "gps-controller";
@@ -31,16 +31,16 @@ SELECT @sr_get_message := id FROM service_definition WHERE service_definition = 
 SELECT @sr_set_tilt := id FROM service_definition WHERE service_definition = "set-tilt-amount";
 
 -- mission executor systems
-SELECT @mission_executor := id FROM system_ WHERE system_name = "missionexecutor";
-SELECT @mission_executor_tester := id FROM system_ WHERE system_name = "missionexecutortester";
+-- SELECT @mission_executor := id FROM system_ WHERE system_name = "missionexecutor";
+-- SELECT @mission_executor_tester := id FROM system_ WHERE system_name = "missionexecutortester";
 -- mission executor service definitions
-SELECT @sr_do_mission := id FROM service_definition WHERE service_definition = "do-mission";
+-- SELECT @sr_do_mission := id FROM service_definition WHERE service_definition = "do-mission";
 
 -- mission scheduler systems
-SELECT @mission_scheduler := id FROM system_ WHERE system_name = "missionscheduler";
-SELECT @mission_scheduler_tester := id FROM system_ WHERE system_name = "missionschedulertester";
+-- SELECT @mission_scheduler := id FROM system_ WHERE system_name = "missionscheduler";
+-- SELECT @mission_scheduler_tester := id FROM system_ WHERE system_name = "missionschedulertester";
 -- mission scheduler service definitions
-SELECT @sr_add_mission := id FROM service_definition WHERE service_definition = "add-mission";
+-- SELECT @sr_add_mission := id FROM service_definition WHERE service_definition = "add-mission";
 
 -- navigator systems
 SELECT @navigator := id FROM system_ WHERE system_name = "navigator";
@@ -84,15 +84,15 @@ INSERT INTO authorization_intra_cloud
     (@mission_scheduler, @mission_executor, @sr_do_mission);
 
 -- hello rules
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@hello_cons, @hello_prov, @sr_hello);
-SELECT @hello_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_hello;
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@hello_aid, @sr_interface);
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@hello_cons, @hello_prov, @sr_hello);
+-- SELECT @hello_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_hello;
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@hello_aid, @sr_interface);
 
 
 -- Robot controller
@@ -127,26 +127,26 @@ INSERT INTO authorization_intra_cloud_interface_connection
     (@set_tilt_aid, @sr_interface);
 
 -- mission executor
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@mission_executor_tester, @mission_executor, @sr_do_mission);
-SELECT @do_mission_aid_test:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission AND consumer_system_id = @mission_executor_tester;
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@do_mission_aid_test, @sr_interface);
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@mission_executor_tester, @mission_executor, @sr_do_mission);
+-- SELECT @do_mission_aid_test:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission AND consumer_system_id = @mission_executor_tester;
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@do_mission_aid_test, @sr_interface);
 
 -- mission scheduler rules
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@mission_scheduler_tester, @mission_scheduler, @sr_add_mission);
-SELECT @add_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_add_mission;
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@add_mission_aid, @sr_interface);
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@mission_scheduler_tester, @mission_scheduler, @sr_add_mission);
+-- SELECT @add_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_add_mission;
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@add_mission_aid, @sr_interface);
 
 -- navigator rules
 INSERT INTO authorization_intra_cloud
@@ -164,26 +164,26 @@ INSERT INTO authorization_intra_cloud_interface_connection
 -- inter system rules
 
 -- mission executor -> mission scheduler : executor ready
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@mission_executor, @mission_scheduler, @sr_executor_ready);
-SELECT @executor_ready_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_executor_ready;
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@executor_ready_aid, @sr_interface);
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@mission_executor, @mission_scheduler, @sr_executor_ready);
+-- SELECT @executor_ready_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_executor_ready;
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@executor_ready_aid, @sr_interface);
 
 -- mission scheduler -> mission executor : do mission
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@mission_scheduler, @mission_executor, @sr_do_mission);
-SELECT @do_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission  AND consumer_system_id = @mission_scheduler;
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@do_mission_aid, @sr_interface);
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@mission_scheduler, @mission_executor, @sr_do_mission);
+-- SELECT @do_mission_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_do_mission  AND consumer_system_id = @mission_scheduler;
+-- INSERT INTO authorization_intra_cloud_interface_connection
+--     (authorization_intra_cloud_id, interface_id)
+--     VALUES
+--     (@do_mission_aid, @sr_interface);
 
 -- navigator -> gps controller : get accuracy
 INSERT INTO authorization_intra_cloud
