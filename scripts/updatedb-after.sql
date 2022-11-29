@@ -78,10 +78,10 @@ INSERT INTO authorization_intra_cloud
     VALUES
     (@gps_controller_test, @gps_controller, @sr_get_gps_accuracy);
 SELECT @get_gps_accuracy_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_gps_accuracy;
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
     VALUES
-    (@mission_scheduler, @mission_executor, @sr_do_mission);
+    (@get_gps_accuracy_aid, @sr_interface);
 
 -- hello rules
 -- INSERT INTO authorization_intra_cloud

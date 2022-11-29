@@ -85,7 +85,6 @@ public class HelloConsumerMain implements ApplicationRunner {
 
 	public void setSpeedOrchestrationAndConsumption() {
     	logger.info("Orchestration request for " + HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION + " service:");
-
 		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
 
 		logger.info("Orchestration response:");
@@ -101,24 +100,32 @@ public class HelloConsumerMain implements ApplicationRunner {
 			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
 			validateOrchestrationResult(orchestrationResult, HelloConsumerConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
 
-			// Create a hello request
-			logger.info("Create a speed request:");
-			SetSpeedRequestDTO request = new SetSpeedRequestDTO(1000,500);
-			logger.info("Create a speed request done");
-			printOut(request);
-			logger.info("after print");
-			
-			// Get the security token
-			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			logger.info("Consume service");
-			@SuppressWarnings("unchecked")
-			
+			while (true) {
+				// Create a hello request
+				logger.info("Create a speed request:");
+				SetSpeedRequestDTO request = new SetSpeedRequestDTO(3000,5000);
+				logger.info("Create a speed request done");
+				printOut(request);
+				logger.info("after print");
+				
+				// Get the security token
+				final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
+				logger.info("Consume service");
+				@SuppressWarnings("unchecked")
+				
 
-			final AddMessageResponseDTO response = arrowheadService.consumeServiceHTTP(AddMessageResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
-					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-					getInterface(), token, request, new String[0]);
-			logger.info("Provider response");
-			printOut(response);
+				final AddMessageResponseDTO response = arrowheadService.consumeServiceHTTP(AddMessageResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(HelloConsumerConstants.HTTP_METHOD)),
+						orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
+						getInterface(), token, request, new String[0]);
+				logger.info("Provider response");
+				printOut(response);
+				try {
+					Thread.sleep(700);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
 		}
 	}

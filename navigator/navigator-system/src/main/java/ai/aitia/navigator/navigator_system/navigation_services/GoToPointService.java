@@ -67,8 +67,16 @@ public class GoToPointService implements Runnable {
             response = getOrchestrationResponse(serviceDefinition);
             
             if(response == null) {
+                logger.info("null response");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 continue;
             } else if (response.getResponse().isEmpty()) {
+                logger.info("empty response");
                 continue;
             } else {
                 break;
@@ -81,12 +89,17 @@ public class GoToPointService implements Runnable {
     public void run() {
         // create pid
         PIDController pid = new PIDController(1.2, 0.01, 0);
+        logger.info("Start orchestration");
 
         // do orchestrations
-        final OrchestrationResultDTO getCoordinates = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_CORDINATES_SERVICE_DEFINITION);
-        final OrchestrationResultDTO getHeading = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_HEADING_SERVICE_DEFINITION);
-        final OrchestrationResultDTO getAccuracy = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_ACCURACY_SERVICE_DEFINITION);
         final OrchestrationResultDTO setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
+        logger.info("orchestration for setTrackSpeed received.");
+        final OrchestrationResultDTO getAccuracy = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_ACCURACY_SERVICE_DEFINITION);
+        logger.info("orchestration for getAccuracy received.");
+        final OrchestrationResultDTO getCoordinates = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_CORDINATES_SERVICE_DEFINITION);
+        logger.info("orchestration for getCoordinates received.");
+        final OrchestrationResultDTO getHeading = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_HEADING_SERVICE_DEFINITION);
+        logger.info("orchestration for getHeading received.");
 
         Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
         while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
@@ -126,7 +139,7 @@ public class GoToPointService implements Runnable {
             currentHeading = gpsheading.getHeading();
 
             // Calculate control value using pid and difference between headings
-            double e = bearing - currentHeading;
+            double e = bearing - Math.toRadians(currentHeading);
             double u = pid.getNextU(e);
 
             // set speeds of tracks
@@ -152,6 +165,7 @@ public class GoToPointService implements Runnable {
 
 	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
 		// Create a request for the orchestrator asking for the hello service
+        //printOut(serviceDefinition);
     	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(serviceDefinition)
     																		.interfaces(getInterface())
     																		.build();
@@ -161,10 +175,11 @@ public class GoToPointService implements Runnable {
 																					   .flag(Flag.OVERRIDE_STORE, true)
 																					   .build();
 		
-		printOut(orchestrationFormRequest);		
+		//printOut(orchestrationFormRequest);		
 		
 		// Send request to orchestrator and get a response
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
+        //printOut(orchestrationResponse);
 		return orchestrationResponse;
 	}
 

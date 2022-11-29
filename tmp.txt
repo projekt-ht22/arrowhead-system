@@ -1,0 +1,75 @@
+Working:
+"get-gps-accuracy"
+{
+  "requesterSystem" : {
+    "systemName" : "gps-controller-test",
+    "address" : "127.0.0.1",
+    "port" : 8080,
+    "authenticationInfo" : "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArCjx436XRiJuEBivQuMaiJFP/77AvFjjEUvtdr1c+N4pLVtfUriXwEC6v8goT+/gdVdWTFYymyaVVq9cMA6Ep7SSQ/pNS0tJpZWZfPX5qGsjsLoK0XWNXD17bZLJSF8NVIJvk5g1wrnf8d/FqIm3Y4Xt3Obt1a5BCxqzQIF/3vGFwHjPsSjbY7uCvGoO5SnR7YnDRR1jJh5j45M5RNEfD+/c77B7lh1UUNFIMnLV7p1yX8gEq929vdFFkCfAlO7VvFwHFRD+H5/MJS207hAIYgDekdP5AzvD1i1ed+6DPMno15b+qC2Qz+Z64y0smIINBq5lXUw+t32y1zWnvCAd2wIDAQAB",
+    "metadata" : null
+  },
+  "requesterCloud" : null,
+  "requestedService" : {
+    "serviceDefinitionRequirement" : "get-gps-accuracy",
+    "interfaceRequirements" : [ "HTTP-SECURE-JSON" ],
+    "securityRequirements" : null,
+    "metadataRequirements" : null,
+    "versionRequirement" : null,
+    "minVersionRequirement" : null,
+    "maxVersionRequirement" : null,
+    "pingProviders" : false
+  },
+  "orchestrationFlags" : {
+    "onlyPreferred" : false,
+    "overrideStore" : true,
+    "externalServiceRequest" : false,
+    "enableInterCloud" : false,
+    "enableQoS" : false,
+    "matchmaking" : true,
+    "metadataSearch" : false,
+    "triggerInterCloud" : false,
+    "pingProviders" : false
+  },
+  "preferredProviders" : [ ],
+  "commands" : { },
+  "qosRequirements" : { }
+}
+
+"get-gps-accuracy"
+{
+  "requesterSystem" : {
+    "systemName" : "navigator",
+    "address" : "127.0.0.1",
+    "port" : 3003,
+    "authenticationInfo" : "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibHBCs6HCRUYgd2PxvQPkAzkhzUUx0WmorNNvoqUnBqcJubWHa1MVseAtqJXT6cMri36rMcpwS9LvxBR7lZgir8an0QkswAlvQYqcapaDU609TbmI/pzRPjwo7+ves5yorthEMZLkDJQ6aH1BtZtvK34rQX5+Dm5CxybLLIJmO1WO9uBgoJVxLHavayWhDssrs0enc7se9KtZPln10UY71E0BGw5cZGLJ8tHrWf9GQBU4HpS8edmRDOzi+j7oUDKBVaiD8LvOkqjxo0wb/iOigkps7/QbVmBuXGNuBRPCZ9Ht+7DsfqdXIoSnFNMUiSPqqGNX0R9j6ww7vK2KYOPjwIDAQAB",
+    "metadata" : null
+  },
+  "requesterCloud" : null,
+  "requestedService" : {
+    "serviceDefinitionRequirement" : "get-gps-accuracy",
+    "interfaceRequirements" : [ "HTTP-SECURE-JSON" ],
+    "securityRequirements" : null,
+    "metadataRequirements" : null,
+    "versionRequirement" : null,
+    "minVersionRequirement" : null,
+    "maxVersionRequirement" : null,
+    "pingProviders" : false
+  },
+  "orchestrationFlags" : {
+    "onlyPreferred" : false,
+    "overrideStore" : true,
+    "externalServiceRequest" : false,
+    "enableInterCloud" : false,
+    "enableQoS" : false,
+    "matchmaking" : true,
+    "metadataSearch" : false,
+    "triggerInterCloud" : false,
+    "pingProviders" : false
+  },
+  "preferredProviders" : [ ],
+  "commands" : { },
+  "qosRequirements" : { }
+}
+
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibHBCs6HCRUYgd2PxvQPkAzkhzUUx0WmorNNvoqUnBqcJubWHa1MVseAtqJXT6cMri36rMcpwS9LvxBR7lZgir8an0QkswAlvQYqcapaDU609TbmI/pzRPjwo7+ves5yorthEMZLkDJQ6aH1BtZtvK34rQX5+Dm5CxybLLIJmO1WO9uBgoJVxLHavayWhDssrs0enc7se9KtZPln10UY71E0BGw5cZGLJ8tHrWf9GQBU4HpS8edmRDOzi+j7oUDKBVaiD8LvOkqjxo0wb/iOigkps7/QbVmBuXGNuBRPCZ9Ht+7DsfqdXIoSnFNMUiSPqqGNX0R9j6ww7vK2KYOPjwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibHBCs6HCRUYgd2PxvQPkAzkhzUUx0WmorNNvoqUnBqcJubWHa1MVseAtqJXT6cMri36rMcpwS9LvxBR7lZgir8an0QkswAlvQYqcapaDU609TbmI/pzRPjwo7+ves5yorthEMZLkDJQ6aH1BtZtvK34rQX5+Dm5CxybLLIJmO1WO9uBgoJVxLHavayWhDssrs0enc7se9KtZPln10UY71E0BGw5cZGLJ8tHrWf9GQBU4HpS8edmRDOzi+j7oUDKBVaiD8LvOkqjxo0wb/iOigkps7/QbVmBuXGNuBRPCZ9Ht+7DsfqdXIoSnFNMUiSPqqGNX0R9j6ww7vK2KYOPjwIDAQAB

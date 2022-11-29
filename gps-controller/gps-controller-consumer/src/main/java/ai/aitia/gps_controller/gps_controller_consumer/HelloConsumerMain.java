@@ -63,6 +63,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 
 	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {
 		// Create a request for the orchestrator asking for the hello service
+		printOut(serviceDefinition);
     	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(serviceDefinition)
     																		.interfaces(getInterface())
     																		.build();
