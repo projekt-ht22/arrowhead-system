@@ -13,6 +13,8 @@ import ai.aitia.mission_scheduler.common.GPSPoint;
 import ai.aitia.navigator.navigator_system.NavigatorSystemConstants;
 import ai.aitia.navigator.navigator_system.PIDController;
 import ai.aitia.navigator.navigator_system.StaticFunctions;
+import ai.aitia.robot_controller.common.dto.AddMessageResponseDTO;
+import ai.aitia.robot_controller.common.dto.SetSpeedRequestDTO;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
 import eu.arrowhead.common.dto.shared.OrchestrationFormRequestDTO;
@@ -137,10 +139,13 @@ public class GoToPointService implements Runnable {
             leftRPM = leftRPM > 7000 ? 7000 : leftRPM;
             rightRPM = rightRPM > 7000 ? 7000 : rightRPM;
 
-            //logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
-            //    goalPosition.getLatitude(), goalPosition.getLongitude(),
-            //    currentPosition.getLatitude(), currentPosition.getLongitude());
-            //logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
+            SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
+            AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+
+            logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
+                goalPosition.getLatitude(), goalPosition.getLongitude(),
+                currentPosition.getLatitude(), currentPosition.getLongitude());
+            logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
             logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
         }
     }
