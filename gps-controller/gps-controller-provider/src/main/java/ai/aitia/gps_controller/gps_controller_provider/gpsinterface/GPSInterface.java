@@ -4,6 +4,8 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.io.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,8 @@ public class GPSInterface {
 	private double latitude;
 	private double longitude;
 	private double heading;
+
+    private final Logger logger = LogManager.getLogger(GPSInterface.class);
 	
 
 	
@@ -107,7 +111,7 @@ public class GPSInterface {
 			double logitude_radians = ByteBuffer.wrap(raw_gps_data, 31, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
 
 			// Heading in units of 1 × 10−6 radians. Range +- PI
-			int heading_radians = raw_gps_data[54] << 16 | raw_gps_data[53] << 8 | raw_gps_data[52];
+			double heading_radians = raw_gps_data[54] << 16 | raw_gps_data[53] << 8 | raw_gps_data[52];
 			heading_radians = heading_radians/1000000;
 
 			this.latitude = Math.toDegrees(latitude_radians);
@@ -117,6 +121,7 @@ public class GPSInterface {
 			// System.out.println("latitude: " + latitude);
 			// System.out.println("longitude: " + longitude);
 			// System.out.println("Heading: " + heading);
+			logger.info("this heading: {}  raw heading: {}", this.heading, heading_radians);
 		}
 	}
 
