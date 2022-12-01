@@ -101,10 +101,21 @@ public class GoToPointService implements Runnable {
         final OrchestrationResultDTO getHeading = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_HEADING_SERVICE_DEFINITION);
         logger.info("orchestration for getHeading received.");
 
+
+        logger.info("Wait until gps is ready.");
         Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
         while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+            logger.info("GPS not ready trying again. Status: {}", navigationStatus);
             navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
+
+        logger.info("GPS ready start running.");
 
         while (true) {
             synchronized(stop) {
@@ -186,7 +197,6 @@ public class GoToPointService implements Runnable {
 	private <T, E> T consumeServiceRequestAndResponse(OrchestrationResultDTO orchestrationResult, E request, Class<T> responseType) {
 		// Get the security token
 		final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-		logger.info("Consume service");
 		@SuppressWarnings("unchecked")
 
 		// Send a request to the provider and get a response
@@ -200,7 +210,6 @@ public class GoToPointService implements Runnable {
 	private <T> T consumeServiceResponse(OrchestrationResultDTO orchestrationResult, Class<T> responseType) {
 		// Get the security token
 		final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-		logger.info("Consume service");
 		@SuppressWarnings("unchecked")
 
 		// Send a request to the provider and get a response
