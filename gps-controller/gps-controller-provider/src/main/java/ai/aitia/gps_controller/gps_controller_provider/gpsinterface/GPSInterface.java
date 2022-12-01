@@ -111,17 +111,17 @@ public class GPSInterface {
 			double logitude_radians = ByteBuffer.wrap(raw_gps_data, 31, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
 
 			// Heading in units of 1 × 10−6 radians. Range +- PI
-			double heading_radians = raw_gps_data[54] << 16 | raw_gps_data[53] << 8 | raw_gps_data[52];
+			double heading_radians = (Byte.toUnsignedInt(raw_gps_data[54]) << 24 | Byte.toUnsignedInt(raw_gps_data[53]) << 16 | Byte.toUnsignedInt(raw_gps_data[52]) << 8) >> 8;
 			heading_radians = heading_radians/1000000;
 
 			this.latitude = Math.toDegrees(latitude_radians);
 			this.longitude = Math.toDegrees(logitude_radians);
-			this.heading = Math.toDegrees(heading_radians);
+			this.heading = heading_radians;
 
 			// System.out.println("latitude: " + latitude);
 			// System.out.println("longitude: " + longitude);
 			// System.out.println("Heading: " + heading);
-			logger.info("this heading: {}  raw heading: {}", this.heading, heading_radians);
+			logger.info("this heading rad: {}  degrees: {}", this.heading, Math.toDegrees(this.heading));
 		}
 	}
 

@@ -148,9 +148,10 @@ public class GoToPointService implements Runnable {
             // update heading
             GetGPSHeadingResponseDTO gpsheading = consumeServiceResponse(getHeading, GetGPSHeadingResponseDTO.class);
             currentHeading = gpsheading.getHeading();
+            //currentHeading = 0;
 
             // Calculate control value using pid and difference between headings
-            double e = bearing - Math.toRadians(currentHeading);
+            double e = bearing - currentHeading;
             double u = pid.getNextU(e);
 
             // set speeds of tracks
@@ -171,6 +172,7 @@ public class GoToPointService implements Runnable {
                 currentPosition.getLatitude(), currentPosition.getLongitude());
             logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
             logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
+            logger.info("Distance: {}", distance);
         }
     }
 
