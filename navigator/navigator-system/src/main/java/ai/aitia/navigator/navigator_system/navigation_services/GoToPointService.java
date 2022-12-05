@@ -229,37 +229,6 @@ public class GoToPointService implements Runnable {
 		return ret;
 	}
 
-    /*
-	public void executorReady(ExecutorStatus status) {
-    	logger.info("Orchestration request for " + MissionExecutorSystemConstants.EXECUTOR_READY_SERVICE_DEFINITION + " service:");
-
-		OrchestrationResponseDTO orchestrationResponse = getOrchestrationResponse(MissionExecutorSystemConstants.EXECUTOR_READY_SERVICE_DEFINITION);
-
-		logger.info("Orchestration response:");
-		printOut(orchestrationResponse);
-		
-		// Check for a valid response
-		if (orchestrationResponse == null) {
-			logger.info("No orchestration response received");
-		} else if (orchestrationResponse.getResponse().isEmpty()) {
-			logger.info("No provider found during the orchestration");
-		} else {
-			// Valid response received
-			final OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
-			validateOrchestrationResult(orchestrationResult, MissionExecutorSystemConstants.EXECUTOR_READY_SERVICE_DEFINITION);
-			
-			final ExecutorReadyDTO request = new ExecutorReadyDTO(status);
-			printOut(request);
-
-			String response = consumeServiceRequestAndResponse(orchestrationResult, request, String.class);
-			
-			logger.info("Provider response");
-			printOut(response);
-		}
-	}
-    */
-
-    
     //=================================================================================================
 	// assistant methods
     
