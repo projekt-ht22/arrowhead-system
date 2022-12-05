@@ -12,6 +12,10 @@ public class NavigatorSystemConstants {
 	public static final String HTTP_METHOD = "http-method";
 	public static final String GO_TO_POINT_SERVICE_DEFINITION = "go-to-point";
 	public static final String GO_TO_POINT_URI= "/go_to_point";
+	public static final String STOP_SERVICE_DEFINITION = "stop";
+	public static final String STOP_URI= "/go_to_point";
+	public static final String FOLLOW_PATH_SERVICE_DEFINITION = "follow-path";
+	public static final String FOLLOW_PATH_URI= "/follow_path";
 
 	public static final String GET_GPS_CORDINATES_SERVICE_DEFINITION = "get-gps-cordinates";
 	public static final String GET_GPS_HEADING_SERVICE_DEFINITION = "get-gps-heading";

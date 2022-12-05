@@ -8,6 +8,7 @@ import ai.aitia.mission_scheduler.common.GPSPoint;
 public class FollowPathRequestDTO implements Serializable {
 
     private List<GPSPoint> path;
+    private int remindWhenLeft; // The number of points left to navigate to when a reminder to send more is sent out
 
     public FollowPathRequestDTO() {}
     public FollowPathRequestDTO(List<GPSPoint> path) {

@@ -85,8 +85,10 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		arrowheadService.updateCoreServiceURIs(CoreSystem.ORCHESTRATOR);
 		
 		//Register services into ServiceRegistry
-		final ServiceRegistryRequestDTO createCarServiceRequest = createServiceRegistryRequest(NavigatorSystemConstants.GO_TO_POINT_SERVICE_DEFINITION, NavigatorSystemConstants.GO_TO_POINT_URI, HttpMethod.POST);		
-		arrowheadService.forceRegisterServiceToServiceRegistry(createCarServiceRequest);
+		final ServiceRegistryRequestDTO GoToPointServiceRequest = createServiceRegistryRequest(NavigatorSystemConstants.GO_TO_POINT_SERVICE_DEFINITION, NavigatorSystemConstants.GO_TO_POINT_URI, HttpMethod.POST);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(GoToPointServiceRequest);
+		final ServiceRegistryRequestDTO stopServiceRequest = createServiceRegistryRequest(NavigatorSystemConstants.STOP_SERVICE_DEFINITION, NavigatorSystemConstants.STOP_URI, HttpMethod.GET);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(stopServiceRequest);
 	}
 	
 	//-------------------------------------------------------------------------------------------------

@@ -1,5 +1,9 @@
 package ai.aitia.navigator.navigator_system.navigation_services;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpMethod;
@@ -27,8 +31,8 @@ import eu.arrowhead.common.dto.shared.OrchestrationFlags.Flag;
 import eu.arrowhead.common.dto.shared.OrchestrationFormRequestDTO.Builder;
 import eu.arrowhead.common.exception.InvalidParameterException;
 
-public class GoToPointService implements Runnable {
-    private final Logger logger = LogManager.getLogger(GoToPointService.class);
+public class FollowPathService implements Runnable {
+    private final Logger logger = LogManager.getLogger(FollowPathService.class);
 
     private GPSPoint currentPosition;
     private double currentHeading;
@@ -36,18 +40,32 @@ public class GoToPointService implements Runnable {
     private double simlat = 65;
     private double simlon = 22;
 
-    private GPSPoint goalPosition;
+    private Boolean running = false;
 
     private SSLProperties sslProperties;
     private ArrowheadService arrowheadService;
 
+    private Queue<GPSPoint> path;
     private NavigatorState state;
 
-    public GoToPointService(GPSPoint goal, SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state) {
-        this.goalPosition = goal;
+    public FollowPathService(SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state) {
         this.sslProperties = sslProperties;
         this.arrowheadService = arrowheadService;
         this.state = state;
+
+        path = new LinkedList<>();
+    }
+
+    public Boolean getRunning() {
+        synchronized(running) {
+            return running;
+        }
+    }
+
+    public void addToQueue(List<GPSPoint> toAdd) {
+        synchronized(path) {
+            path.addAll(toAdd);
+        }
     }
 
     private void simulateUpdateCurrent() {
@@ -83,6 +101,9 @@ public class GoToPointService implements Runnable {
 
     @Override
     public void run() {
+        synchronized(running) {
+            running = true;
+        }
         // create pid
         PIDController pid = new PIDController(1.2, 0.01, 0);
         logger.info("Start orchestration");
@@ -100,15 +121,23 @@ public class GoToPointService implements Runnable {
 
         logger.info("Wait until gps is ready.");
         Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-        while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
-            logger.info("GPS not ready trying again. Status: {}", navigationStatus);
-            navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        // while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+        //     logger.info("GPS not ready trying again. Status: {}", navigationStatus);
+        //     navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+        //     try {
+        //         Thread.sleep(2000);
+        //     } catch (InterruptedException e) {
+        //         // TODO Auto-generated catch block
+        //         e.printStackTrace();
+        //     }
+        // }
+
+        // setup first goal position
+        while (path.size() == 0); // do not need to protect here. Why is left as a exercise for the reader
+
+        GPSPoint goalPosition;
+        synchronized(path) {
+            goalPosition = path.remove();
         }
 
         logger.info("GPS ready start running.");
@@ -117,25 +146,37 @@ public class GoToPointService implements Runnable {
             if (state.shouldStop()) {
                 SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
                 AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+                synchronized(running) {
+                    running = false;
+                }
                 return;
             }
 
             // update current position and heading
-            //simulateUpdateCurrent();
+            simulateUpdateCurrent();
+            currentPosition = new GPSPoint(simlat, simlon);
 
             GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            double lat = gpsResponse.getLatitude();
-            double lon = gpsResponse.getLongitude();
-
-            currentPosition = new GPSPoint(lat, lon);
+            //double lat = gpsResponse.getLatitude();
+            //double lon = gpsResponse.getLongitude();
+            //currentPosition = new GPSPoint(lat, lon);
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
 
             // check if at goal position
-            if (distance < 2) {
+            if (distance < 0.1) {
                 // send ready to executor
-                return;
+                if (path.size() != 0) {
+                    synchronized(path) {
+                        goalPosition = path.remove();
+                    }
+                } else {
+                    synchronized(running) {
+                        running = false;
+                    }
+                    return;
+                }
             }
 
             // calculate bearing to goal
@@ -158,8 +199,8 @@ public class GoToPointService implements Runnable {
             double u = pid.getNextU(e);
 
             // set speeds of tracks
-            double leftRPM = (5 + u) * 1000;
-            double rightRPM = (5 - u) * 1000;
+            double leftRPM = (4 + u) * 1000;
+            double rightRPM = (4 - u) * 1000;
 
             // cap rpm
             leftRPM = leftRPM < 1000 ? 1000 : leftRPM;
