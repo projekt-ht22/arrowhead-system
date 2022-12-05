@@ -137,7 +137,7 @@ public class GoToPointService implements Runnable {
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
 
             // check if at goal position
-            if (distance < 0.03) {
+            if (distance < 2) {
                 // send ready to executor
                 return;
             }
@@ -152,6 +152,13 @@ public class GoToPointService implements Runnable {
 
             // Calculate control value using pid and difference between headings
             double e = bearing - currentHeading;
+
+            if (e < -1 * Math.PI) {
+                e = e + 2 * Math.PI;
+            } else if (e > Math.PI) {
+                e = e - 2 * Math.PI;
+            }
+
             double u = pid.getNextU(e);
 
             // set speeds of tracks
