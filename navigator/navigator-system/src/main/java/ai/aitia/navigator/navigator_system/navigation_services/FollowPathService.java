@@ -122,16 +122,16 @@ public class FollowPathService implements Runnable {
 
         logger.info("Wait until gps is ready.");
         Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-        // while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
-        //     logger.info("GPS not ready trying again. Status: {}", navigationStatus);
-        //     navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-        //     try {
-        //         Thread.sleep(2000);
-        //     } catch (InterruptedException e) {
-        //         // TODO Auto-generated catch block
-        //         e.printStackTrace();
-        //     }
-        // }
+        while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+            logger.info("GPS not ready trying again. Status: {}", navigationStatus);
+            navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         // setup first goal position
         while (path.size() == 0); // do not need to protect here. Why is left as a exercise for the reader
@@ -154,13 +154,13 @@ public class FollowPathService implements Runnable {
             }
 
             // update current position and heading
-            simulateUpdateCurrent();
-            currentPosition = new GPSPoint(simlat, simlon);
+            // simulateUpdateCurrent();
+            // currentPosition = new GPSPoint(simlat, simlon);
 
             GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            //double lat = gpsResponse.getLatitude();
-            //double lon = gpsResponse.getLongitude();
-            //currentPosition = new GPSPoint(lat, lon);
+            double lat = gpsResponse.getLatitude();
+            double lon = gpsResponse.getLongitude();
+            currentPosition = new GPSPoint(lat, lon);
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
