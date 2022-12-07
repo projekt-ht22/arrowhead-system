@@ -47,6 +47,7 @@ SELECT @navigator := id FROM system_ WHERE system_name = "navigator";
 SELECT @navigator_tester := id FROM system_ WHERE system_name = "navigatortester";
 -- navigator service definitions
 SELECT @sr_go_to_point := id FROM service_definition WHERE service_definition = "go-to-point";
+SELECT @sr_follow_path := id FROM service_definition WHERE service_definition = "follow-path";
 
 -- Rules for the test systems ---------------------------------------------------------------------------------------------
 
@@ -159,6 +160,15 @@ INSERT INTO authorization_intra_cloud_interface_connection
     VALUES
     (@go_to_point_test_aid, @sr_interface);
 
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@navigator_tester, @navigator, @sr_follow_path);
+SELECT @follow_path_test_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_follow_path AND consumer_system_id = @navigator_tester;
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@follow_path_test_aid, @sr_interface);
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- inter system rules

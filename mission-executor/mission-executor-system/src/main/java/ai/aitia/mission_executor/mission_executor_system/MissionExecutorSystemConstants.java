@@ -15,6 +15,7 @@ public class MissionExecutorSystemConstants {
 
 
 	public static final String EXECUTOR_READY_SERVICE_DEFINITION =  "executor-ready";
+	public static final String GO_TO_POINT_SERVICE_DEFINITION = "go-to-point";
 	
 	//=================================================================================================
 	// assistant methods

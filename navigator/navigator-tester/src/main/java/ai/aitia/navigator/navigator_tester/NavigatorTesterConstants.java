@@ -11,6 +11,7 @@ public class NavigatorTesterConstants {
 	public static final String INTERFACE_INSECURE = "HTTP-INSECURE-JSON";
 	public static final String HTTP_METHOD = "http-method";
 	public static final String GO_TO_POINT_SERVICE_DEFINITION = "go-to-point";
+	public static final String FOLLOW_PATH_SERVICE_DEFINITION = "follow-path";
 	
 	// The service definitions for the service that is consumed
 	

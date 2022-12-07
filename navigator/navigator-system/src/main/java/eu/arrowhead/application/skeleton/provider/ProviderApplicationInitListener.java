@@ -89,6 +89,8 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		arrowheadService.forceRegisterServiceToServiceRegistry(GoToPointServiceRequest);
 		final ServiceRegistryRequestDTO stopServiceRequest = createServiceRegistryRequest(NavigatorSystemConstants.STOP_SERVICE_DEFINITION, NavigatorSystemConstants.STOP_URI, HttpMethod.GET);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(stopServiceRequest);
+		final ServiceRegistryRequestDTO followPathServiceRequest = createServiceRegistryRequest(NavigatorSystemConstants.FOLLOW_PATH_SERVICE_DEFINITION, NavigatorSystemConstants.FOLLOW_PATH_URI, HttpMethod.POST);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(followPathServiceRequest);
 	}
 	
 	//-------------------------------------------------------------------------------------------------
@@ -96,6 +98,8 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 	public void customDestroy() {
 		//Unregister service
 		arrowheadService.unregisterServiceFromServiceRegistry(NavigatorSystemConstants.GO_TO_POINT_SERVICE_DEFINITION, NavigatorSystemConstants.GO_TO_POINT_URI);
+		arrowheadService.unregisterServiceFromServiceRegistry(NavigatorSystemConstants.FOLLOW_PATH_SERVICE_DEFINITION, NavigatorSystemConstants.FOLLOW_PATH_URI);
+		arrowheadService.unregisterServiceFromServiceRegistry(NavigatorSystemConstants.STOP_SERVICE_DEFINITION, NavigatorSystemConstants.STOP_URI);
 	}
 	
 	//=================================================================================================

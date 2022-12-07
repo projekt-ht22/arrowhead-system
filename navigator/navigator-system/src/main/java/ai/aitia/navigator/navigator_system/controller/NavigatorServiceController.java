@@ -86,6 +86,8 @@ public class NavigatorServiceController {
 	@PostMapping(path = NavigatorSystemConstants.FOLLOW_PATH_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody public NavigatorResponseDTO followPath(@RequestBody final FollowPathRequestDTO dto) {
 		logger.info("Se if thread is running");
+
+		// This block should not be here TODO: move
 		if (currentThread != null) {
 			// terminate current
 			logger.info("------------------------- interupted");
@@ -100,6 +102,7 @@ public class NavigatorServiceController {
 			}
 		}
 
+		logger.info("No thread running anymore prosed.");
 		state.start();
 
 		List<GPSPoint> path = dto.getPath();
@@ -107,19 +110,18 @@ public class NavigatorServiceController {
 		if (currentFollowPathService == null) { // create new path follower
 			currentFollowPathService = new FollowPathService(sslProperties, arrowheadService, state);
 			currentFollowPathService.addToQueue(path);
-			currentThread = new Thread(currentGoToPointService);
+			currentThread = new Thread(currentFollowPathService);
 			currentThread.start();
+			logger.info("Created new path follower and started");
 		} else if (!currentFollowPathService.getRunning()) { // use old path follower
 			currentFollowPathService.addToQueue(path);
-			currentThread = new Thread(currentGoToPointService);
+			currentThread = new Thread(currentFollowPathService);
 			currentThread.start();
+			logger.info("Started new thread with new follower");
 		} else { // add to running path follower
 			currentFollowPathService.addToQueue(path);
+			logger.info("added to running follower");
 		}
-
-
-
-
 
 		return new NavigatorResponseDTO(NavigatorStatus.OK);
 	}

@@ -24,6 +24,8 @@ import org.apache.logging.log4j.Logger;
 import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO.ExecutorStatus;
+import ai.aitia.navigator.common.GoToPointRequestDTO;
+import ai.aitia.navigator.common.NavigatorResponseDTO;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -58,6 +60,8 @@ public class DoMissionService implements Runnable {
 
 	private void doGotoPointTask(GoToPointTask task) {
 		logger.info("Going to point: lat: {} long: {}", task.getPoint().getLatitude(), task.getPoint().getLongitude());
+		OrchestrationResultDTO response = getOrchestrationResultBlocking(MissionExecutorSystemConstants.GO_TO_POINT_SERVICE_DEFINITION);
+		consumeServiceRequestAndResponse(response, new GoToPointRequestDTO(task.getPoint(), 0), NavigatorResponseDTO.class);
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
@@ -145,6 +149,30 @@ public class DoMissionService implements Runnable {
 		
 		return ret;
 	}
+
+    private OrchestrationResultDTO getOrchestrationResultBlocking(String serviceDefinition) {
+        OrchestrationResponseDTO response = null;
+        while (true) {
+            response = getOrchestrationResponse(serviceDefinition);
+            
+            if(response == null) {
+                logger.info("null response");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                continue;
+            } else if (response.getResponse().isEmpty()) {
+                logger.info("empty response");
+                continue;
+            } else {
+                break;
+            }
+        }
+        return response.getResponse().get(0);
+    }
 
 	public void executorReady(ExecutorStatus status) {
     	logger.info("Orchestration request for " + MissionExecutorSystemConstants.EXECUTOR_READY_SERVICE_DEFINITION + " service:");

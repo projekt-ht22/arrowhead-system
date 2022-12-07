@@ -11,7 +11,6 @@ import eu.arrowhead.common.SSLProperties;
 public class NavigatorState {
 
     private Boolean stop;
-    private FollowPathService followPathService;
 
     @Autowired
     SSLProperties sslProperties;
@@ -21,11 +20,6 @@ public class NavigatorState {
 
     public NavigatorState() {
         stop = false;
-        followPathService = new FollowPathService(sslProperties, arrowheadService);
-    }
-    
-    public FollowPathService getFollowPathService() {
-        return followPathService;
     }
    
     public void stop() {

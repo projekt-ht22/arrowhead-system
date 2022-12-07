@@ -101,6 +101,7 @@ public class FollowPathService implements Runnable {
 
     @Override
     public void run() {
+        logger.info("start follow path service");
         synchronized(running) {
             running = true;
         }
