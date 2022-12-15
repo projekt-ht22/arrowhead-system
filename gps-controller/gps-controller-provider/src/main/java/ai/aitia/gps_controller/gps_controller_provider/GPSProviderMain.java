@@ -35,7 +35,7 @@ public class GPSProviderMain {
 
 			try {
 				gpsInterface.getData();
-			} catch (IOException e) {
+			} catch (IOException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

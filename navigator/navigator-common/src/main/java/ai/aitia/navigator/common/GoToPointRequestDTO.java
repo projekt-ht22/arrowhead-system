@@ -7,25 +7,25 @@ import ai.aitia.mission_scheduler.common.GPSPoint;
 public class GoToPointRequestDTO implements Serializable {
 
     private GPSPoint point;
-    private int missionID;
+    private long taskID;
 
     public GoToPointRequestDTO() {}
-    public GoToPointRequestDTO(GPSPoint point, int missionID) {
+    public GoToPointRequestDTO(GPSPoint point, long taskID) {
         this.point = point;
-        this.missionID = missionID;
+        this.taskID = taskID;
     }
 
     public GPSPoint getPoint() {
         return point;
     }
-    public int getMissionID() {
-        return missionID;
+    public long getTaskID() {
+        return taskID;
     }
 
     public void setPoint(GPSPoint point) {
         this.point = point;
     }
-    public void setMissionID(int missionID) {
-        this.missionID = missionID;
+    public void setTaskID(long taskID) {
+        this.taskID = taskID;
     }
 }

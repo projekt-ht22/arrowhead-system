@@ -121,13 +121,13 @@ public class GoToPointService implements Runnable {
             }
 
             // update current position and heading
-            //simulateUpdateCurrent();
+            simulateUpdateCurrent();
 
             GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            double lat = gpsResponse.getLatitude();
-            double lon = gpsResponse.getLongitude();
+            //double lat = gpsResponse.getLatitude();
+            //double lon = gpsResponse.getLongitude();
 
-            currentPosition = new GPSPoint(lat, lon);
+            //currentPosition = new GPSPoint(lat, lon);
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);

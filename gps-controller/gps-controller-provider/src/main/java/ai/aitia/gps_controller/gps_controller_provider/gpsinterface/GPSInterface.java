@@ -43,6 +43,8 @@ public class GPSInterface {
 
 	public void getData() throws IOException {
 
+		int n = 0;
+
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 		// blocks until a package is received
@@ -121,6 +123,7 @@ public class GPSInterface {
 			// System.out.println("latitude: " + latitude);
 			// System.out.println("longitude: " + longitude);
 			// System.out.println("Heading: " + heading);
+
 			logger.info("this heading rad: {}  degrees: {}", this.heading, Math.toDegrees(this.heading));
 		}
 	}

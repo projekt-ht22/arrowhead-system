@@ -106,7 +106,7 @@ public class FollowPathService implements Runnable {
             running = true;
         }
         // create pid
-        PIDController pid = new PIDController(1.2, 0.01, 0);
+        PIDController pid = new PIDController(7, 0.01, 0);
         logger.info("Start orchestration");
 
         // do orchestrations
@@ -154,19 +154,19 @@ public class FollowPathService implements Runnable {
             }
 
             // update current position and heading
-            // simulateUpdateCurrent();
-            // currentPosition = new GPSPoint(simlat, simlon);
+            simulateUpdateCurrent();
+            currentPosition = new GPSPoint(simlat, simlon);
 
-            GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            double lat = gpsResponse.getLatitude();
-            double lon = gpsResponse.getLongitude();
-            currentPosition = new GPSPoint(lat, lon);
+            // GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
+            // double lat = gpsResponse.getLatitude();
+            // double lon = gpsResponse.getLongitude();
+            // currentPosition = new GPSPoint(lat, lon);
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
 
             // check if at goal position
-            if (distance < 0.1) {
+           if (distance < 0.50) {
                 // send ready to executor
                 if (path.size() != 0) {
                     synchronized(path) {
@@ -185,8 +185,8 @@ public class FollowPathService implements Runnable {
 
             // update heading
             GetGPSHeadingResponseDTO gpsheading = consumeServiceResponse(getHeading, GetGPSHeadingResponseDTO.class);
-            currentHeading = gpsheading.getHeading();
-            //currentHeading = 0;
+            // currentHeading = gpsheading.getHeading();
+            currentHeading = 0;
 
             // Calculate control value using pid and difference between headings
             double e = bearing - currentHeading;
@@ -200,8 +200,8 @@ public class FollowPathService implements Runnable {
             double u = pid.getNextU(e);
 
             // set speeds of tracks
-            double leftRPM = (4 + u) * 1000;
-            double rightRPM = (4 - u) * 1000;
+            double leftRPM = (7 + u) * 1000;
+            double rightRPM = (7 - u) * 1000;
 
             // cap rpm
             leftRPM = leftRPM < 1000 ? 1000 : leftRPM;
@@ -212,12 +212,13 @@ public class FollowPathService implements Runnable {
             SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
             AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
 
-            logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
-                goalPosition.getLatitude(), goalPosition.getLongitude(),
-                currentPosition.getLatitude(), currentPosition.getLongitude());
-            logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
-            logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
-            logger.info("Distance: {}", distance);
+            // logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
+            //     goalPosition.getLatitude(), goalPosition.getLongitude(),
+            //     currentPosition.getLatitude(), currentPosition.getLongitude());
+            // logger.info("bearing: {} heading: {} e: {}", bearing, currentHeading, e);
+            // logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
+            // logger.info("Distance: {}", distance);
+            System.out.println(currentPosition.getLatitude() + " " + currentPosition.getLongitude() + " " + currentHeading + " " + bearing + " " + distance + " " + e + " " + u + " " + leftRPM + " " + rightRPM + " " + goalPosition.getLatitude() + " " + goalPosition.getLongitude());
         }
     }
 
