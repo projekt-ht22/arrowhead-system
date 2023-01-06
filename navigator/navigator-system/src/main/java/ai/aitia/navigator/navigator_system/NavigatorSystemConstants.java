@@ -14,6 +14,8 @@ public class NavigatorSystemConstants {
 	public static final String GO_TO_POINT_URI= "/go_to_point";
 	public static final String STOP_SERVICE_DEFINITION = "stop";
 	public static final String STOP_URI= "/stop";
+	public static final String START_SERVICE_DEFINITION = "start";
+	public static final String START_URI= "/start";
 	public static final String FOLLOW_PATH_SERVICE_DEFINITION = "follow-path";
 	public static final String FOLLOW_PATH_URI= "/follow_path";
 
@@ -21,6 +23,7 @@ public class NavigatorSystemConstants {
 	public static final String GET_GPS_HEADING_SERVICE_DEFINITION = "get-gps-heading";
 	public static final String SET_TRACK_SPEED_SERVICE_DEFINITION = "set-track-speed";
 	public static final String GET_GPS_ACCURACY_SERVICE_DEFINITION = "get-gps-accuracy";
+	public static final String TASK_DONE_SERVICE_DEFINITION = "task-done";
 	
 	//=================================================================================================
 	// assistant methods

@@ -87,6 +87,8 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		//Register services into ServiceRegistry
 		final ServiceRegistryRequestDTO createCarServiceRequest = createServiceRegistryRequest(MissionExecutorSystemConstants.DO_MISSION_SERVICE_DEFINITION, MissionExecutorSystemConstants.DO_MISSION_URI, HttpMethod.POST);		
 		arrowheadService.forceRegisterServiceToServiceRegistry(createCarServiceRequest);
+		final ServiceRegistryRequestDTO taskDoneServiceRequest = createServiceRegistryRequest(MissionExecutorSystemConstants.TASK_DONE_SERVICE_DEFINITION, MissionExecutorSystemConstants.TASK_DONE_URI, HttpMethod.POST);		
+		arrowheadService.forceRegisterServiceToServiceRegistry(taskDoneServiceRequest);
 	}
 	
 	//-------------------------------------------------------------------------------------------------
@@ -94,6 +96,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 	public void customDestroy() {
 		//Unregister service
 		arrowheadService.unregisterServiceFromServiceRegistry(MissionExecutorSystemConstants.DO_MISSION_SERVICE_DEFINITION, MissionExecutorSystemConstants.DO_MISSION_URI);
+		arrowheadService.unregisterServiceFromServiceRegistry(MissionExecutorSystemConstants.TASK_DONE_SERVICE_DEFINITION, MissionExecutorSystemConstants.TASK_DONE_URI);
 	}
 	
 	//=================================================================================================

@@ -9,6 +9,8 @@ import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSCordinatesResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSHeadingResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO.Navigation_status;
+import ai.aitia.mission_executor.common.dto.ExecutorResponseDTO;
+import ai.aitia.mission_executor.common.dto.TaskDoneRequestDTO;
 import ai.aitia.mission_scheduler.common.GPSPoint;
 import ai.aitia.navigator.navigator_system.NavigatorState;
 import ai.aitia.navigator.navigator_system.NavigatorSystemConstants;
@@ -42,17 +44,19 @@ public class GoToPointService implements Runnable {
     private ArrowheadService arrowheadService;
 
     private NavigatorState state;
+    private long taskId;
 
-    public GoToPointService(GPSPoint goal, SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state) {
+    public GoToPointService(GPSPoint goal, SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state, long taskId) {
         this.goalPosition = goal;
         this.sslProperties = sslProperties;
         this.arrowheadService = arrowheadService;
         this.state = state;
+        this.taskId = taskId;
     }
 
     private void simulateUpdateCurrent() {
         currentPosition = new GPSPoint(simlat, simlon);
-        simlat += 0.0000001;
+        simlat += 0.0001;
         currentHeading = 0;
         //       65.61686316645734
     }
@@ -83,13 +87,19 @@ public class GoToPointService implements Runnable {
 
     @Override
     public void run() {
+
+        boolean simulate = true;
+
         // create pid
         PIDController pid = new PIDController(1.2, 0.01, 0);
         logger.info("Start orchestration");
 
+        OrchestrationResultDTO setTrackSpeed = null;
         // do orchestrations
-        final OrchestrationResultDTO setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
-        logger.info("orchestration for setTrackSpeed received.");
+        if (!simulate) {
+            setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
+            logger.info("orchestration for setTrackSpeed received.");
+        }
         final OrchestrationResultDTO getAccuracy = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_ACCURACY_SERVICE_DEFINITION);
         logger.info("orchestration for getAccuracy received.");
         final OrchestrationResultDTO getCoordinates = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_CORDINATES_SERVICE_DEFINITION);
@@ -98,44 +108,60 @@ public class GoToPointService implements Runnable {
         logger.info("orchestration for getHeading received.");
 
 
-        logger.info("Wait until gps is ready.");
-        Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-        while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
-            logger.info("GPS not ready trying again. Status: {}", navigationStatus);
-            navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (!simulate) {
+            logger.info("Wait until gps is ready.");
+            Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+            while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+                logger.info("GPS not ready trying again. Status: {}", navigationStatus);
+                navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
 
         logger.info("GPS ready start running.");
 
         while (true) {
-            if (state.shouldStop()) {
-                SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
-                AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+            if (state.shouldCancel()) {
+                if (!simulate) {
+                    SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
+                    AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+                }
                 return;
+            } else if (state.shouldStop()) {
+                // should stop just wait until should not stop again
+                while(!state.shouldStop()) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        // if interrupted something in the state probably changed so stop waiting for start
+                        break;
+                    }
+                }
             }
 
-            // update current position and heading
-            simulateUpdateCurrent();
+            if (simulate) {
+                // update current position and heading
+                simulateUpdateCurrent();
+            } else {
+                GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
+                double lat = gpsResponse.getLatitude();
+                double lon = gpsResponse.getLongitude();
 
-            GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            //double lat = gpsResponse.getLatitude();
-            //double lon = gpsResponse.getLongitude();
-
-            //currentPosition = new GPSPoint(lat, lon);
+                currentPosition = new GPSPoint(lat, lon);
+            }
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
 
             // check if at goal position
             if (distance < 2) {
-                // send ready to executor
-                return;
+                // goal reached nothing more to do, break
+                break;
             }
 
             // calculate bearing to goal
@@ -167,8 +193,10 @@ public class GoToPointService implements Runnable {
             leftRPM = leftRPM > 7000 ? 7000 : leftRPM;
             rightRPM = rightRPM > 7000 ? 7000 : rightRPM;
 
-            SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
-            AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+            if (!simulate) {
+                SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
+                AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+            }
 
             logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
                 goalPosition.getLatitude(), goalPosition.getLongitude(),
@@ -177,6 +205,12 @@ public class GoToPointService implements Runnable {
             logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
             logger.info("Distance: {}", distance);
         }
+
+        // send done command back
+        OrchestrationResultDTO executorDone = getOrchestrationResultBlocking(NavigatorSystemConstants.TASK_DONE_SERVICE_DEFINITION);
+        TaskDoneRequestDTO doneRequest = new TaskDoneRequestDTO(taskId);
+        ExecutorResponseDTO response = consumeServiceRequestAndResponse(executorDone, doneRequest, ExecutorResponseDTO.class);
+
     }
 
 	private OrchestrationResponseDTO getOrchestrationResponse(String serviceDefinition) {

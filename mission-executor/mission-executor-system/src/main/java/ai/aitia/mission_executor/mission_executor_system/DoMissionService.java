@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO.ExecutorStatus;
+import ai.aitia.navigator.common.FollowPathRequestDTO;
 import ai.aitia.navigator.common.GoToPointRequestDTO;
 import ai.aitia.navigator.common.NavigatorResponseDTO;
 import eu.arrowhead.common.CommonConstants;
@@ -61,21 +62,23 @@ public class DoMissionService implements Runnable {
 	private void doGotoPointTask(GoToPointTask task) {
 		logger.info("Going to point: lat: {} long: {}", task.getPoint().getLatitude(), task.getPoint().getLongitude());
 		OrchestrationResultDTO response = getOrchestrationResultBlocking(MissionExecutorSystemConstants.GO_TO_POINT_SERVICE_DEFINITION);
-		consumeServiceRequestAndResponse(response, new GoToPointRequestDTO(task.getPoint(), 0), NavigatorResponseDTO.class);
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			logger.info("interrupted");
-			return;
-		}
+		consumeServiceRequestAndResponse(response, new GoToPointRequestDTO(task.getPoint(), controllerState.changeTaskId()), NavigatorResponseDTO.class);
 	}
 
-	private void doFollowPathTask(FollowPathTask task) {
+	private void doFollowPathTask(FollowPathTask task) { // Follow path now sending the whole path for now
 		logger.info("Following path");
-		for (GPSPoint point: task.getPoints()) {
-			logger.info("Going to point: lat: {} long: {}", point.getLatitude(), point.getLongitude());
+
+		OrchestrationResultDTO response = getOrchestrationResultBlocking(MissionExecutorSystemConstants.FOLLOW_PATH_SERVICE_DEFINITION);
+		consumeServiceRequestAndResponse(response, new FollowPathRequestDTO(task.getPoints(), 0, controllerState.changeTaskId()), NavigatorResponseDTO.class);
+	}
+
+	private void waitForTaskReady() {
+		while (true) {
+			if (controllerState.isLastFinishedTaskIdCurrentTaskId()) { // if we got confirmation task is done return
+				return;
+			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				logger.info("interrupted");
 				return;
@@ -101,20 +104,17 @@ public class DoMissionService implements Runnable {
         logger.info("Started mission");
         for (int i = 0; i < tasks.size(); i++) {
             MissionTask n = tasks.get(i);
-            synchronized(controllerState) {
-                if (!controllerState.isRunning()) {
-                    return;
-                }
-                controllerState.setCurrentTaskIndex(i);
-            }
+			if (!controllerState.isRunning()) {
+				return;
+			}
+			controllerState.setCurrentTaskIndex(i);
             logger.info("doing: {}", n.getDescription());
 			doTask(n);
+			waitForTaskReady();
         }
 
         logger.info("done with mission");
-        synchronized(controllerState) {
-            controllerState.setRunning(false);
-        }
+		controllerState.setRunning(false);
         executorReady(ExecutorStatus.READY);
     }
 

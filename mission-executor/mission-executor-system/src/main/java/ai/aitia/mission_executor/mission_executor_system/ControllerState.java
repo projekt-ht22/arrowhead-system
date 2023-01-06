@@ -9,34 +9,55 @@ public class ControllerState {
     private boolean isRunning;
     private int currentTaskIndex;
     private Mission currentMission;
+    private long currentTaskId;
+    private long lastFinishedTaskId;
 
     public ControllerState() {
         isRunning = false;
         currentTaskIndex = 0;
         currentMission = null;
+        currentTaskId = 0;
+        lastFinishedTaskId = -1;
     }
 
-    public boolean isRunning() {
+    public synchronized boolean isRunning() {
         return isRunning;
     }
 
-    public Mission getCurrentMission() {
+    public synchronized Mission getCurrentMission() {
         return currentMission;
     }
 
-    public int getCurrentTaskIndex() {
+    public synchronized int getCurrentTaskIndex() {
         return currentTaskIndex;
     }
 
-    public void setCurrentMission(Mission currentMission) {
+    public synchronized void setCurrentMission(Mission currentMission) {
         this.currentMission = currentMission;
     }
 
-    public void setCurrentTaskIndex(int currentTaskIndex) {
+    public synchronized void setCurrentTaskIndex(int currentTaskIndex) {
         this.currentTaskIndex = currentTaskIndex;
     }
 
-    public void setRunning(boolean isRunning) {
+    public synchronized void setRunning(boolean isRunning) {
         this.isRunning = isRunning;
+    }
+
+    public synchronized long changeTaskId() {
+        currentTaskId += 1;
+        return currentTaskId;
+    }
+
+    public synchronized void setLastFinishedTaskId(long lastFinishedTaskId) {
+        this.lastFinishedTaskId = lastFinishedTaskId;
+    }
+
+    public synchronized boolean isLastFinishedTaskIdCurrentTaskId() {
+        return lastFinishedTaskId == currentTaskId;
+    }
+
+    public synchronized boolean isCurentTaskIdThisTaskId(long thisTaskId) {
+        return currentTaskId == thisTaskId;
     }
 }

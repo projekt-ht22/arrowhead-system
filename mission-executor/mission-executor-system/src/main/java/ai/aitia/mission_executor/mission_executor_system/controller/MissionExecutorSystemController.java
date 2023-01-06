@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ai.aitia.arrowhead.application.library.ArrowheadService;
 import ai.aitia.mission_executor.common.dto.DoMissionRequestDTO;
 import ai.aitia.mission_executor.common.dto.DoMissionResponseDTO;
+import ai.aitia.mission_executor.common.dto.ExecutorResponseDTO;
 import ai.aitia.mission_executor.common.dto.HelloRequestDTO;
 import eu.arrowhead.common.SSLProperties;
 import eu.arrowhead.common.Utilities;
@@ -36,6 +37,7 @@ import eu.arrowhead.common.dto.shared.OrchestrationFlags.Flag;
 import eu.arrowhead.common.dto.shared.OrchestrationFormRequestDTO.Builder;
 import eu.arrowhead.common.exception.InvalidParameterException;
 import ai.aitia.mission_executor.common.dto.HelloResponseDTO;
+import ai.aitia.mission_executor.common.dto.TaskDoneRequestDTO;
 import ai.aitia.mission_executor.common.dto.DoMissionResponseDTO.Status;
 import ai.aitia.mission_executor.mission_executor_system.ControllerState;
 import ai.aitia.mission_executor.mission_executor_system.DoMissionService;
@@ -45,7 +47,6 @@ import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO;
 import ai.aitia.mission_scheduler.common.dto.ExecutorReadyDTO.ExecutorStatus;;
 
 @RestController
-@RequestMapping(MissionExecutorSystemConstants.DO_MISSION_URI)
 public class MissionExecutorSystemController {
 	
 	//=================================================================================================
@@ -65,8 +66,14 @@ public class MissionExecutorSystemController {
 	//=================================================================================================
 	// methods
 
+	@PostMapping(path = MissionExecutorSystemConstants.TASK_DONE_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody public ExecutorResponseDTO taskDone(@RequestBody final TaskDoneRequestDTO dto) {
+		controllerState.setLastFinishedTaskId(dto.getId());
+		return new ExecutorResponseDTO();
+	}
+
 	// POST mapping for the hello service
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = MissionExecutorSystemConstants.DO_MISSION_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody public DoMissionResponseDTO doMission(HttpEntity<String> httpEntity) {
 		logger.info("Handle request do mission.");
 

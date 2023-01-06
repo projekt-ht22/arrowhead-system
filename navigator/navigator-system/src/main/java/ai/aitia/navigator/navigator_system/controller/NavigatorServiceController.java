@@ -60,7 +60,7 @@ public class NavigatorServiceController {
 			// terminate current
 			logger.info("------------------------- interupted");
 
-			state.stop();
+			state.cancel();
 			try {
 				currentThread.join();
 			} catch (InterruptedException e) {
@@ -73,9 +73,9 @@ public class NavigatorServiceController {
 			logger.info("interupted during sleep");
 		}
 
-		state.start();
+		state.notCancel();
 
-		currentGoToPointService = new GoToPointService(dto.getPoint(), sslProperties, arrowheadService, state);
+		currentGoToPointService = new GoToPointService(dto.getPoint(), sslProperties, arrowheadService, state, dto.getTaskID());
 		currentThread = new Thread(currentGoToPointService);
 
 		currentThread.start();
@@ -83,16 +83,12 @@ public class NavigatorServiceController {
 		return new NavigatorResponseDTO(NavigatorStatus.OK);
 	}
 
-	@PostMapping(path = NavigatorSystemConstants.FOLLOW_PATH_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody public NavigatorResponseDTO followPath(@RequestBody final FollowPathRequestDTO dto) {
-		logger.info("Se if thread is running");
-
-		// This block should not be here TODO: move
+	private void endThread() {
 		if (currentThread != null) {
 			// terminate current
 			logger.info("------------------------- interupted");
 
-			state.stop();
+			state.cancel();
 
 			logger.info("Wait on current thread");
 			try {
@@ -101,19 +97,26 @@ public class NavigatorServiceController {
 				logger.info("Interrupted doing join. This should never happen continuing.");
 			}
 		}
+		state.notCancel();
+	}
 
-		logger.info("No thread running anymore prosed.");
-		state.start();
+	@PostMapping(path = NavigatorSystemConstants.FOLLOW_PATH_URI, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody public NavigatorResponseDTO followPath(@RequestBody final FollowPathRequestDTO dto) {
+		logger.info("Se if thread is running");
+
+		// This block should not be here TODO: move
+
 
 		List<GPSPoint> path = dto.getPath();
 
 		if (currentFollowPathService == null) { // create new path follower
-			currentFollowPathService = new FollowPathService(sslProperties, arrowheadService, state);
+			currentFollowPathService = new FollowPathService(sslProperties, arrowheadService, state, dto.getTaskID());
 			currentFollowPathService.addToQueue(path);
 			currentThread = new Thread(currentFollowPathService);
 			currentThread.start();
 			logger.info("Created new path follower and started");
 		} else if (!currentFollowPathService.getRunning()) { // use old path follower
+			currentFollowPathService.resetTaskId(dto.getTaskID());
 			currentFollowPathService.addToQueue(path);
 			currentThread = new Thread(currentFollowPathService);
 			currentThread.start();
@@ -131,13 +134,15 @@ public class NavigatorServiceController {
 		state.stop();
         final OrchestrationResultDTO setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
 
-		try {
-			currentThread.join();
-		} catch (InterruptedException e) {
-			logger.info("Interrupted doing join. This should never happen continuing.");
-		}
 		SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
 		AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+
+		return new NavigatorResponseDTO(NavigatorStatus.OK);
+	}
+
+	@GetMapping(path = NavigatorSystemConstants.START_URI, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody public NavigatorResponseDTO start() {
+		state.start();
 
 		return new NavigatorResponseDTO(NavigatorStatus.OK);
 	}

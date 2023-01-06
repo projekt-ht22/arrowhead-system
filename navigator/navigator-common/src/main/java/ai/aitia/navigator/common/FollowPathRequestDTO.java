@@ -12,9 +12,9 @@ public class FollowPathRequestDTO implements Serializable {
     private long taskID;
 
     public FollowPathRequestDTO() {}
-    public FollowPathRequestDTO(List<GPSPoint> path, int remindWhenLeft, long missionID) {
+    public FollowPathRequestDTO(List<GPSPoint> path, int remindWhenLeft, long taskID) {
         this.path = path;
-        this.taskID = missionID;
+        this.taskID = taskID;
         this.remindWhenLeft = remindWhenLeft;
     }
 

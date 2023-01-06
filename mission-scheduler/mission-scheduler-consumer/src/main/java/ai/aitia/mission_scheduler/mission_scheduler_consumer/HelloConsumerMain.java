@@ -121,16 +121,16 @@ public class HelloConsumerMain implements ApplicationRunner {
 			// Create a mission
 			final List<MissionTask> tasks = new ArrayList<>();
 
-			GoToPointTask task1 = new GoToPointTask("go to start", 23.45, 34.56);
+			GoToPointTask task1 = new GoToPointTask("go to start", 65.05, 22.0);
 			List<GPSPoint> points2 = new ArrayList<>();
-			points2.add(new GPSPoint(1.5, 1.5));
-			points2.add(new GPSPoint(2.5, 2.5));
-			points2.add(new GPSPoint(3.5, 3.5));
-			points2.add(new GPSPoint(4.5, 4.5));
-			points2.add(new GPSPoint(5.5, 5.5));
-			points2.add(new GPSPoint(6.5, 6.5));
+			points2.add(new GPSPoint(65.06, 22.0));
+			points2.add(new GPSPoint(65.07, 22.0));
+			points2.add(new GPSPoint(65.08, 22.0));
+			points2.add(new GPSPoint(65.09, 22.0));
+			points2.add(new GPSPoint(65.10, 22.0));
+			points2.add(new GPSPoint(65.11, 22.0));
 			FollowPathTask task2 = new FollowPathTask("follow path", points2);
-			GoToPointTask task3 = new GoToPointTask("go to home", 123.45, 134.56);
+			GoToPointTask task3 = new GoToPointTask("go to home", 65.15, 22.0);
 			tasks.add(task1);
 			tasks.add(task2);
 			tasks.add(task3);

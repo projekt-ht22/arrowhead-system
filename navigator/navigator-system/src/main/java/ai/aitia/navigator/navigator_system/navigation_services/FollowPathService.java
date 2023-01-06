@@ -13,6 +13,8 @@ import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSCordinatesResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSHeadingResponseDTO;
 import ai.aitia.gps_controller.common.dto.GetGPSAccuracyResponseDTO.Navigation_status;
+import ai.aitia.mission_executor.common.dto.ExecutorResponseDTO;
+import ai.aitia.mission_executor.common.dto.TaskDoneRequestDTO;
 import ai.aitia.mission_scheduler.common.GPSPoint;
 import ai.aitia.navigator.navigator_system.NavigatorState;
 import ai.aitia.navigator.navigator_system.NavigatorSystemConstants;
@@ -41,6 +43,7 @@ public class FollowPathService implements Runnable {
     private double simlon = 22;
 
     private Boolean running = false;
+    private long taskId;
 
     private SSLProperties sslProperties;
     private ArrowheadService arrowheadService;
@@ -48,10 +51,11 @@ public class FollowPathService implements Runnable {
     private Queue<GPSPoint> path;
     private NavigatorState state;
 
-    public FollowPathService(SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state) {
+    public FollowPathService(SSLProperties sslProperties, ArrowheadService arrowheadService, NavigatorState state, long taskId) {
         this.sslProperties = sslProperties;
         this.arrowheadService = arrowheadService;
         this.state = state;
+        this.taskId = taskId;
 
         path = new LinkedList<>();
     }
@@ -68,9 +72,15 @@ public class FollowPathService implements Runnable {
         }
     }
 
+    public void resetTaskId(long taskId) {
+        synchronized(this) {
+            this.taskId = taskId;
+        }
+    }
+
     private void simulateUpdateCurrent() {
         currentPosition = new GPSPoint(simlat, simlon);
-        simlat += 0.0000001;
+        simlat += 0.0001;
         currentHeading = 0;
         //       65.61686316645734
     }
@@ -101,6 +111,9 @@ public class FollowPathService implements Runnable {
 
     @Override
     public void run() {
+
+        boolean simulate = true;
+
         logger.info("start follow path service");
         synchronized(running) {
             running = true;
@@ -109,9 +122,12 @@ public class FollowPathService implements Runnable {
         PIDController pid = new PIDController(7, 0.01, 0);
         logger.info("Start orchestration");
 
+        OrchestrationResultDTO setTrackSpeed = null;
         // do orchestrations
-        final OrchestrationResultDTO setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
-        logger.info("orchestration for setTrackSpeed received.");
+        if (!simulate) {
+            setTrackSpeed = getOrchestrationResultBlocking(NavigatorSystemConstants.SET_TRACK_SPEED_SERVICE_DEFINITION);
+            logger.info("orchestration for setTrackSpeed received.");
+        }
         final OrchestrationResultDTO getAccuracy = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_ACCURACY_SERVICE_DEFINITION);
         logger.info("orchestration for getAccuracy received.");
         final OrchestrationResultDTO getCoordinates = getOrchestrationResultBlocking(NavigatorSystemConstants.GET_GPS_CORDINATES_SERVICE_DEFINITION);
@@ -120,16 +136,18 @@ public class FollowPathService implements Runnable {
         logger.info("orchestration for getHeading received.");
 
 
-        logger.info("Wait until gps is ready.");
-        Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-        while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
-            logger.info("GPS not ready trying again. Status: {}", navigationStatus);
-            navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (!simulate) {
+            logger.info("Wait until gps is ready.");
+            Navigation_status navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+            while (navigationStatus != Navigation_status.REAL_TIME_DATA) {
+                logger.info("GPS not ready trying again. Status: {}", navigationStatus);
+                navigationStatus = consumeServiceResponse(getAccuracy, GetGPSAccuracyResponseDTO.class).getNavigation_status();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -144,23 +162,38 @@ public class FollowPathService implements Runnable {
         logger.info("GPS ready start running.");
 
         while (true) {
-            if (state.shouldStop()) {
-                SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
-                AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
-                synchronized(running) {
+            if (state.shouldCancel()) {
+                if (!simulate) {
+                    SetSpeedRequestDTO request = new SetSpeedRequestDTO(0, 0);
+                    AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+                }
+                synchronized(this) {
                     running = false;
+                    path.clear(); // when canceling all points should be removed so they do not persist for the next path
                 }
                 return;
+            } else if (state.shouldStop()) {
+                // should stop just wait until should not stop again
+                while(!state.shouldStop()) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        // if interrupted something in the state probably changed so stop waiting for start
+                        break;
+                    }
+                }
             }
 
-            // update current position and heading
-            simulateUpdateCurrent();
-            currentPosition = new GPSPoint(simlat, simlon);
+            if (simulate) {
+                // update current position and heading
+                simulateUpdateCurrent();
+            } else {
+                GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
+                double lat = gpsResponse.getLatitude();
+                double lon = gpsResponse.getLongitude();
 
-            // GetGPSCordinatesResponseDTO gpsResponse = consumeServiceResponse(getCoordinates, GetGPSCordinatesResponseDTO.class);
-            // double lat = gpsResponse.getLatitude();
-            // double lon = gpsResponse.getLongitude();
-            // currentPosition = new GPSPoint(lat, lon);
+                currentPosition = new GPSPoint(lat, lon);
+            }
 
             // calculate distance to goal
             double distance = StaticFunctions.calculateDistance(goalPosition, currentPosition);
@@ -173,10 +206,7 @@ public class FollowPathService implements Runnable {
                         goalPosition = path.remove();
                     }
                 } else {
-                    synchronized(running) {
-                        running = false;
-                    }
-                    return;
+                    break;
                 }
             }
 
@@ -209,8 +239,10 @@ public class FollowPathService implements Runnable {
             leftRPM = leftRPM > 7000 ? 7000 : leftRPM;
             rightRPM = rightRPM > 7000 ? 7000 : rightRPM;
 
-            SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
-            AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+            if (!simulate) {
+                SetSpeedRequestDTO request = new SetSpeedRequestDTO(((Double)leftRPM).intValue(), ((Double)rightRPM).intValue());
+                AddMessageResponseDTO response = consumeServiceRequestAndResponse(setTrackSpeed, request, AddMessageResponseDTO.class);
+            }
 
             // logger.info("goal: lat: {} lon: {} current: lat: {} lon: {}",
             //     goalPosition.getLatitude(), goalPosition.getLongitude(),
@@ -219,6 +251,20 @@ public class FollowPathService implements Runnable {
             // logger.info("u: {} leftRPM: {} rightRPM: {}", u, leftRPM, rightRPM);
             // logger.info("Distance: {}", distance);
             System.out.println(currentPosition.getLatitude() + " " + currentPosition.getLongitude() + " " + currentHeading + " " + bearing + " " + distance + " " + e + " " + u + " " + leftRPM + " " + rightRPM + " " + goalPosition.getLatitude() + " " + goalPosition.getLongitude());
+        }
+
+
+        if (simulate) {
+            simlat = 65;
+            simlon = 22;
+        }
+
+        // send done command back
+        OrchestrationResultDTO executorDone = getOrchestrationResultBlocking(NavigatorSystemConstants.TASK_DONE_SERVICE_DEFINITION);
+        TaskDoneRequestDTO doneRequest = new TaskDoneRequestDTO(taskId);
+        ExecutorResponseDTO response = consumeServiceRequestAndResponse(executorDone, doneRequest, ExecutorResponseDTO.class);
+        synchronized(running) {
+            running = false;
         }
     }
 

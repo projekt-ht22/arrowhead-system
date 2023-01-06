@@ -10,6 +10,8 @@ import eu.arrowhead.common.SSLProperties;
 @Component
 public class NavigatorState {
 
+    private Boolean cancel;
+
     private Boolean stop;
 
     @Autowired
@@ -20,6 +22,7 @@ public class NavigatorState {
 
     public NavigatorState() {
         stop = false;
+        cancel = false;
     }
    
     public void stop() {
@@ -40,6 +43,26 @@ public class NavigatorState {
             ret = stop;
         }
 
+        return ret;
+    }
+
+    public void cancel() {
+        synchronized(cancel) {
+            cancel = true;
+        }
+    }
+
+    public void notCancel() {
+        synchronized(cancel) {
+            cancel = false;
+        }
+    }
+
+    public boolean shouldCancel() {
+        boolean ret;
+        synchronized(cancel) {
+            ret = cancel;
+        }
         return ret;
     }
 }
