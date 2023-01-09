@@ -1,0 +1,98 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>eu.arrowhead</groupId>
+		<artifactId>snowblower</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	
+	<artifactId>snowblower-provider</artifactId>
+	<name>Arrowhead snowblower Provider</name>
+
+	    <!-- BUILD PROPERTIES -->
+    <properties>
+        <!-- DEPENDENCIES VERSIONS -->
+        <slf4j.version>1.7.32</slf4j.version>
+        <pi4j.version>2.1.1</pi4j.version>
+    </properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>snowblower-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- include Pi4J Core -->
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+
+        <!-- include Pi4J Plugins (Platforms and I/O Providers) -->
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-raspberrypi</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-pigpio</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+    			<groupId>org.springframework.boot</groupId>
+    			<artifactId>spring-boot-maven-plugin</artifactId>
+    			<executions>
+    				<execution>
+    					<goals>
+    						<goal>repackage</goal>
+    					</goals>
+    				</execution>
+    			</executions>
+  			</plugin>
+  			
+  			<plugin>
+	 			<artifactId>maven-resources-plugin</artifactId>
+	        	<version>3.1.0</version>
+	        	<executions>
+	          		<execution>
+	            		<id>copy-resources</id>
+	            		<phase>validate</phase>
+		            	<goals>
+		              		<goal>copy-resources</goal>
+		            	</goals>
+		            	<configuration>
+		              		<outputDirectory>${basedir}/target</outputDirectory>
+		              		<resources>
+		                		<resource>
+		                  			<directory>src/main/resources</directory>
+		                  			<includes>
+		                  				<include>application.properties</include>
+		                  			</includes>
+		                		</resource>
+		              		</resources>
+		            	</configuration>
+	          		</execution>
+	        	</executions>
+	      	</plugin>
+		</plugins>
+	</build>
+	
+</project>

@@ -11,17 +11,47 @@ SELECT @sr_get_gps_cordinates := id FROM service_definition WHERE service_defini
 SELECT @sr_get_gps_heading := id FROM service_definition WHERE service_definition = "get-gps-heading";
 SELECT @sr_get_gps_accuracy := id FROM service_definition WHERE service_definition = "get-gps-accuracy";
 
+-- snowblower accessory systems
+SELECT @snowblower := id FROM system_ WHERE system_name = "snowblower";
+SELECT @snowblower_test := id FROM system_ WHERE system_name = "snowblower-test";
+-- snowblower accessory service definitions
+SELECT @sr_get_accessory_id := id FROM service_definition WHERE service_definition = "get-accessory-id";
+SELECT @sr_start_accessory := id FROM service_definition WHERE service_definition = "start-accessory";
+SELECT @sr_stop_accessory := id FROM service_definition WHERE service_definition = "stop-accessory";
+SELECT @sr_command_accessory := id FROM service_definition WHERE service_definition = "command-accessory";
 
 -- gps interface rules
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES
+--     (@gps_controller_test, @gps_controller, @sr_get_gps_cordinates);
+
+-- INSERT INTO authorization_intra_cloud
+--     (consumer_system_id, provider_system_id, service_id)
+--     VALUES    
+--     (@gps_controller_test, @gps_controller, @sr_get_gps_heading);
+
+-- snowblower accessory rules
 INSERT INTO authorization_intra_cloud
     (consumer_system_id, provider_system_id, service_id)
     VALUES
-    (@gps_controller_test, @gps_controller, @sr_get_gps_cordinates);
+    (@snowblower_test, @snowblower, @sr_get_accessory_id);
 
 INSERT INTO authorization_intra_cloud
     (consumer_system_id, provider_system_id, service_id)
-    VALUES    
-    (@gps_controller_test, @gps_controller, @sr_get_gps_heading);
+    VALUES
+    (@snowblower_test, @snowblower, @sr_start_accessory);
+
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@snowblower_test, @snowblower, @sr_stop_accessory);
+
+INSERT INTO authorization_intra_cloud
+    (consumer_system_id, provider_system_id, service_id)
+    VALUES
+    (@snowblower_test, @snowblower, @sr_command_accessory);
+
 -- -- car test systems
 -- SELECT @car_prov := id FROM system_ WHERE system_name = "cardemoprovider";
 -- SELECT @car_cons := id FROM system_ WHERE system_name = "cardemoconsumer";
@@ -126,25 +156,32 @@ SELECT @get_gps_cordinates_aid:= id FROM authorization_intra_cloud WHERE service
 SELECT @get_gps_heading_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_gps_heading;
 SELECT @get_gps_accuracy_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_gps_accuracy;
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@mission_executor, @mission_scheduler, @sr_executor_ready);
+-- rule ids
+SELECT @gget_accessory_id_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_accessory_id;
+SELECT @start_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_start_accessory;
+SELECT @stop_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_stop_accessory;
+SELECT @command_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_command_accessory;
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@get_gps_cordinates_aid, @sr_interface);
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@get_gps_heading_aid, @sr_interface);
+-- ~ INSERT INTO authorization_intra_cloud_interface_connection
+    -- ~ (authorization_intra_cloud_id, interface_id)
+    -- ~ VALUES
+    -- ~ (@mission_executor, @mission_scheduler, @sr_executor_ready);
 
-INSERT INTO authorization_intra_cloud
-    (consumer_system_id, provider_system_id, service_id)
-    VALUES
-    (@mission_scheduler, @mission_executor, @sr_do_mission);
+-- ~ INSERT INTO authorization_intra_cloud_interface_connection
+    -- ~ (authorization_intra_cloud_id, interface_id)
+    -- ~ VALUES
+    -- ~ (@get_gps_cordinates_aid, @sr_interface);
+
+-- ~ INSERT INTO authorization_intra_cloud_interface_connection
+    -- ~ (authorization_intra_cloud_id, interface_id)
+    -- ~ VALUES
+    -- ~ (@get_gps_heading_aid, @sr_interface);
+
+-- ~ INSERT INTO authorization_intra_cloud
+    -- ~ (consumer_system_id, provider_system_id, service_id)
+    -- ~ VALUES
+    -- ~ (@mission_scheduler, @mission_executor, @sr_do_mission);
 
 -- rule ids
 -- SELECT @car_create_aid := id FROM authorization_intra_cloud WHERE service_id = @sr_create;
@@ -161,6 +198,32 @@ SELECT @set_speed_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr
 SELECT @set_tilt_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_set_tilt;
 SELECT @go_to_point_test_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_go_to_point AND consumer_system_id = @navigator_tester;
 
+
+SELECT @get_accessory_id_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_get_accessory_id;
+SELECT @start_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_start_accessory;
+SELECT @stop_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_stop_accessory;
+SELECT @command_accessory_aid:= id FROM authorization_intra_cloud WHERE service_id = @sr_command_accessory;
+
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@get_accessory_id_aid, @sr_interface);
+    
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@start_accessory_aid, @sr_interface);
+    
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@stop_accessory_aid, @sr_interface);
+    
+INSERT INTO authorization_intra_cloud_interface_connection
+    (authorization_intra_cloud_id, interface_id)
+    VALUES
+    (@command_accessory_aid, @sr_interface);
+
 -- INSERT INTO authorization_intra_cloud_interface_connection
 --     (authorization_intra_cloud_id, interface_id)
 --     VALUES
@@ -170,6 +233,7 @@ SELECT @go_to_point_test_aid:= id FROM authorization_intra_cloud WHERE service_i
 --     (authorization_intra_cloud_id, interface_id)
 --     VALUES
 --     (@car_get_aid, @sr_interface);
+
 
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)
@@ -211,15 +275,15 @@ INSERT INTO authorization_intra_cloud_interface_connection
     VALUES
     (@set_speed_aid, @sr_interface);
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@do_mission_aid, @sr_interface);
+-- ~ INSERT INTO authorization_intra_cloud_interface_connection
+    -- ~ (authorization_intra_cloud_id, interface_id)
+    -- ~ VALUES
+    -- ~ (@do_mission_aid, @sr_interface);
 
-INSERT INTO authorization_intra_cloud_interface_connection
-    (authorization_intra_cloud_id, interface_id)
-    VALUES
-    (@executor_ready_aid, @sr_interface);
+-- ~ INSERT INTO authorization_intra_cloud_interface_connection
+    -- ~ (authorization_intra_cloud_id, interface_id)
+    -- ~ VALUES
+    -- ~ (@executor_ready_aid, @sr_interface);
 
 INSERT INTO authorization_intra_cloud_interface_connection
     (authorization_intra_cloud_id, interface_id)

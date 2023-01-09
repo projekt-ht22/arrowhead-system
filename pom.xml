@@ -31,6 +31,7 @@
 		<module>mission-executor</module>
 		<module>robot-controller</module>
 		<module>navigator</module>
+		<module>snowblower-accessory</module>
   	</modules>
 	
 	<dependencies>
