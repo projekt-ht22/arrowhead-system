@@ -121,6 +121,7 @@ public class HelloConsumerMain implements ApplicationRunner {
 			// Create a mission
 			final List<MissionTask> tasks = new ArrayList<>();
 
+			/*
 			GoToPointTask task1 = new GoToPointTask("go to start", 65.05, 22.0);
 			List<GPSPoint> points2 = new ArrayList<>();
 			points2.add(new GPSPoint(65.06, 22.0));
@@ -131,6 +132,26 @@ public class HelloConsumerMain implements ApplicationRunner {
 			points2.add(new GPSPoint(65.11, 22.0));
 			FollowPathTask task2 = new FollowPathTask("follow path", points2);
 			GoToPointTask task3 = new GoToPointTask("go to home", 65.15, 22.0);
+			tasks.add(task1);
+			tasks.add(task2);
+			tasks.add(task3);
+			missionList.add(new Mission(tasks, "plow mission", 2));
+			*/
+
+			GoToPointTask task1 = new GoToPointTask("go to start", 65.61769587002634, 22.138672496426604);
+			List<GPSPoint> points2 = new ArrayList<>();
+			points2.add(new GPSPoint(65.61757011695686, 22.138777756608132));
+			// 65.61757011695686, 22.138777756608132
+			points2.add(new GPSPoint(65.61741276016352, 22.13894043141108));
+			// 65.61741276016352, 22.13894043141108
+			points2.add(new GPSPoint(65.61728829808098, 22.13903473801753));
+			// 65.61728829808098, 22.13903473801753
+			points2.add(new GPSPoint(65.61742590368603, 22.13926599141417));
+			// 65.61742590368603, 22.13926599141417
+
+			FollowPathTask task2 = new FollowPathTask("follow path", points2);
+			GoToPointTask task3 = new GoToPointTask("go to home",  65.61729224849172, 22.13903633286719);
+			// 65.61729224849172, 22.13903633286719
 			tasks.add(task1);
 			tasks.add(task2);
 			tasks.add(task3);

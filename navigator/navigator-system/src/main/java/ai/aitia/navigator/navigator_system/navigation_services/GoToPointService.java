@@ -88,7 +88,7 @@ public class GoToPointService implements Runnable {
     @Override
     public void run() {
 
-        boolean simulate = true;
+        boolean simulate = false;
 
         // create pid
         PIDController pid = new PIDController(1.2, 0.01, 0);
@@ -229,7 +229,7 @@ public class GoToPointService implements Runnable {
 		
 		// Send request to orchestrator and get a response
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
-        //printOut(orchestrationResponse);
+        //printOut(orchestrationResponse);22.13903633286719,
 		return orchestrationResponse;
 	}
 

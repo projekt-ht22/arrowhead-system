@@ -112,7 +112,7 @@ public class FollowPathService implements Runnable {
     @Override
     public void run() {
 
-        boolean simulate = true;
+        boolean simulate = false;
 
         logger.info("start follow path service");
         synchronized(running) {
@@ -215,8 +215,11 @@ public class FollowPathService implements Runnable {
 
             // update heading
             GetGPSHeadingResponseDTO gpsheading = consumeServiceResponse(getHeading, GetGPSHeadingResponseDTO.class);
-            // currentHeading = gpsheading.getHeading();
-            currentHeading = 0;
+            if (simulate) {
+                currentHeading = 0;
+            } else {
+                currentHeading = gpsheading.getHeading();
+            }
 
             // Calculate control value using pid and difference between headings
             double e = bearing - currentHeading;
