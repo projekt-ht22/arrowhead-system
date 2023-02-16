@@ -5,3 +5,5 @@ cp -rf mission-scheduler/mission-scheduler-provider/target bin/mission-scheduler
 cp -rf mission-scheduler/mission-scheduler-consumer/target bin/mission-scheduler-tester
 cp -rf robot-controller/robot-controller-provider/target bin/robot-controller
 cp -rf robot-controller/robot-controller-consumer/target bin/robot-controller-tester
+cp -rf gps-controller/gps-controller-provider/target bin/gps-controller
+cp -rf navigator/navigator-system/target bin/navigator

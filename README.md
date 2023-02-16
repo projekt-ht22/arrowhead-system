@@ -29,6 +29,17 @@ java -jar hello-consumer-0.0.1.jar
 
 After this the system is set up correctly and hello can be used as a template to add new systems and looking into the sql scripts to update the core database to know about the systems and the connections between them.
 
+## Running systems for snowblower
+1. Compile all systems with `mvn install`.
+2. Move them into a separate folder for easy access with
+```
+cd scripts
+./move_to_bin.sh
+```
+3. Move to the bin directory with `cd ../bin`.
+4. Run te systems by navigating to each corresponding system and starting it. Appropriate starting order is robot-controller, gps-controller, mission-scheduler, navigator and mission-executor.
+5. Start a demo by running the mission-scheduler-tester. Be shore to understand what it do before thou.
+
 ## Adding a new system
 Putt it in its own folder as in hello.
 Remember to generate a certificate for each system using the instructions from [here](https://github.com/eclipse-arrowhead/core-java-spring/blob/master/documentation/certificates/create_client_certificate.pdf) using the cloud certificate in the certificate folder in the arrowhead-core repo.
